@@ -4,10 +4,10 @@ resource "aws_instance" "app_server_001" {
   instance_type = "t2.large"
   key_name      = "test"
 
-  subnet_id = "${aws_subnet.app-subnet.id}"
+  subnet_id = "${aws_subnet.app_sn.id}"
 
   security_groups = [
-    "${aws_security_group.ingress-allow-all-test.id}"
+    "${aws_security_group.ingress_allow_all_test.id}"
   ]
 }
 

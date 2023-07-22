@@ -6,15 +6,15 @@ resource "aws_vpc" "test_env" {
 }
 
 # allows communication between internet and the vpc
-resource "aws_internet_gateway" "test-env-gw" {
+resource "aws_internet_gateway" "test_env_gw" {
   vpc_id = "${aws_vpc.test_env.id}"
 }
 
 # a routing table associated with the gateway
-resource "aws_route_table" "route-table-test-env" {
+resource "aws_route_table" "test_env_rt" {
   vpc_id = "${aws_vpc.test_env.id}"
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.test-env-gw.id}"
+    gateway_id = "${aws_internet_gateway.test_env_gw.id}"
   }
 }

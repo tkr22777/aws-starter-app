@@ -1,5 +1,4 @@
-resource "aws_security_group" "ingress-allow-all-test" {
-    name = "allow-all-test-sg"
+resource "aws_security_group" "ingress_allow_all_test" {
     vpc_id = "${aws_vpc.test_env.id}"
 
     ingress {
