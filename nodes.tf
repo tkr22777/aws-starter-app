@@ -2,7 +2,7 @@
 resource "aws_instance" "app_server_001" {
   ami           = "ami-069d73f3235b535bd"
   instance_type = "t2.large"
-  key_name      = "test"
+  key_name      = "test_key"
 
   subnet_id = "${aws_subnet.app_sn.id}"
 
