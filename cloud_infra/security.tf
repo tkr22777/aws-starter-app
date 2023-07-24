@@ -2,6 +2,7 @@ resource "aws_security_group" "ingress_allow_all_test" {
     vpc_id = "${aws_vpc.test_env.id}"
 
     ingress {
+        description = "SSH"
         cidr_blocks = [
             "0.0.0.0/0"
         ]
