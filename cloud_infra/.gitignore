@@ -7,5 +7,3 @@
 *.tfstate
 *.tfstate.*
 
-# compiled python files
-*.pyc
