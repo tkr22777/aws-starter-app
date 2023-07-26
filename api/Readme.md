@@ -15,12 +15,12 @@ curl -X POST -H "Content-Type: application/json" -d '{
     "setting_1": "Value 1",
     "setting_2": 42,
     "setting_3": true
-}' http://localhost:8000/usersettings/
+}' http://localhost:8000/v1/usersettings/
 ```
 
 Get a specific UserSetting by user_id:
 ```
-curl -X GET http://localhost:8000/usersettings/{user_id}
+curl -X GET http://localhost:8000/v1/usersettings/{user_id}
 ```
 
 Update an existing UserSetting by user_id:
@@ -30,10 +30,10 @@ curl -X PUT -H "Content-Type: application/json" -d '{
     "setting_1": "Updated Value",
     "setting_2": 99,
     "setting_3": false
-}' http://localhost:8000/usersettings/{user_id}
+}' http://localhost:8000/v1/usersettings/{user_id}
 ```
 
 Delete a UserSetting by user_id:
 ```
-curl -X DELETE http://localhost:8000/usersettings/{user_id}
+curl -X DELETE http://localhost:8000/v1/usersettings/{user_id}
 ```
