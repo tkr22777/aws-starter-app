@@ -1,5 +1,8 @@
 Build, test and deployment scripts are in *Makefile*
 
+TODO:
+* Add integration tests
+
 Developed and tested on Python version: 3.10
 
 Build docker image:
