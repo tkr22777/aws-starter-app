@@ -36,10 +36,10 @@ resource "aws_cognito_user_pool" "white_app_users" {
   /** Custom Attributes */
   schema {
     attribute_data_type      = "String"
-    name                     = "Role"
-    required                 = false
+    name                     = "role"
+    required                 = true
     mutable                  = true
-    developer_only_attribute = true
+    developer_only_attribute = false
 
     string_attribute_constraints {
       min_length = 1
