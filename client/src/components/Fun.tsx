@@ -1,6 +1,6 @@
 const Fun = () => {
     return (
-        <p>hello Fun</p>
+        <h1>hello Fun</h1>
     )
 }
 
