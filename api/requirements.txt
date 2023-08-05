@@ -1,3 +1,5 @@
 uvicorn
 fastapi
 psycopg2-binary
+python-jose[cryptography]
+requests

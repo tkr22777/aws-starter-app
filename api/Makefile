@@ -19,7 +19,7 @@ CURRENT_DIRECTORY := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
 test:
 	# the test script
 
-run: 
+start:
 	uvicorn main:app --reload
 
 spin_up_dockerized_service:
