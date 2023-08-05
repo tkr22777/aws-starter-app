@@ -23,7 +23,9 @@ const SignIn = () => {
 
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
-        console.log('access token + ' + result.getAccessToken().getJwtToken());
+        console.log("Authentication Result:");
+        console.log(result);
+        console.log('Access token + ' + result.getAccessToken().getJwtToken());
         // handle successful authentication
       },
       onFailure: (err) => {
@@ -51,4 +53,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-

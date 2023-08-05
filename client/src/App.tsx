@@ -1,10 +1,8 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Registration from './components/Registration';
-import SignIn from './components/SignIn';
-import UserProfile from './components/UserProfile';
-import Fun from './components/Fun';
-import './App.css';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Registration from "./components/Registration";
+import SignIn from "./components/SignIn";
+import UserProfile from "./components/UserProfile";
+import SignOut from "./components/SignOut";
 
 function App() {
   return (
@@ -18,11 +16,11 @@ function App() {
             <Route path="/login">
               <SignIn />
             </Route>
+            <Route path="/logout">
+              <SignOut />
+            </Route>
             <Route path="/profile">
               <UserProfile />
-            </Route>
-            <Route path="/fun">
-              <Fun />
             </Route>
           </Switch>
         </Router>
