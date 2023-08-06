@@ -7,6 +7,8 @@ export const getToken = (): Promise<string> => {
 
   return new Promise((resolve, reject) => {
     const cognitoUser = userPool.getCurrentUser();
+    console.log("Cognito User")
+    console.log(cognitoUser);
     if (cognitoUser !== null) {
       cognitoUser.getSession((err: Error|null, session: CognitoUserSession|null) => {
         if (err) {

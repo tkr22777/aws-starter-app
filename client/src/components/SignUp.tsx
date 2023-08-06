@@ -1,39 +1,44 @@
 import React, { useState } from "react";
 import {
-  CognitoUser,
-  AuthenticationDetails,
   CognitoUserPool,
+  CognitoUserAttribute,
 } from "amazon-cognito-identity-js";
 import { poolData } from "../utils/user_pool";
 
 const userPool = new CognitoUserPool(poolData);
 
-const SignIn = () => {
+const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleRegister = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const authenticationDetails = new AuthenticationDetails({
-      Username: email,
-      Password: password,
-    });
+    const attributeList = [];
+    attributeList.push(
+      new CognitoUserAttribute({
+        Name: "email",
+        Value: email,
+      })
+    );
 
-    const cognitoUser = new CognitoUser({
-      Username: email,
-      Pool: userPool,
-    });
+    attributeList.push(
+      new CognitoUserAttribute({
+        Name: "custom:role",
+        Value: "user",
+      })
+    );
 
-    cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: (result) => {
-        console.log("Authentication Result:");
-        console.log(result);
-        console.log("Access token + " + result.getAccessToken().getJwtToken());
-      },
-      onFailure: (err) => {
-        console.error(err);
-      },
+    userPool.signUp(email, password, attributeList, [], function (err, result) {
+      if (err) {
+        alert(err.message || JSON.stringify(err));
+        return;
+      }
+      alert(
+        `User: ${email} was created successfully. Result: ${JSON.stringify(
+          result
+        )}`
+      );
     });
   };
 
@@ -41,8 +46,8 @@ const SignIn = () => {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h3 className="text-center mb-4">Sign In</h3>
-          <form onSubmit={handleSubmit}>
+          <h3 className="text-center mb-4">Register</h3>
+          <form onSubmit={handleRegister}>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">
                 Email address
@@ -68,7 +73,7 @@ const SignIn = () => {
               />
             </div>
             <button type="submit" className="btn btn-primary w-100">
-              Sign In
+              Register
             </button>
           </form>
         </div>
@@ -77,4 +82,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

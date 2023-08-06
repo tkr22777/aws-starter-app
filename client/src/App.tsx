@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Registration from "./components/Registration";
+import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
-import UserProfile from "./components/UserProfile";
+import ViewToken from "./components/ViewToken";
 import SignOut from "./components/SignOut";
+import ConfirmAccount from "./components/ConfirmAccount";
 
 function App() {
   return (
@@ -10,17 +11,20 @@ function App() {
       <header className="App-header">
         <Router>
           <Switch>
-            <Route path="/register">
-              <Registration />
+            <Route path="/sign-up">
+              <SignUp />
             </Route>
-            <Route path="/login">
+            <Route path="/confirm">
+              <ConfirmAccount/>
+            </Route>
+            <Route path="/sign-in">
               <SignIn />
             </Route>
-            <Route path="/logout">
+            <Route path="/sign-out">
               <SignOut />
             </Route>
-            <Route path="/profile">
-              <UserProfile />
+            <Route path="/jwt-token">
+              <ViewToken />
             </Route>
           </Switch>
         </Router>
