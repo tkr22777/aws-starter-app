@@ -8,6 +8,7 @@ from models.usersettings import UserSettings
 class UserSettingsDAO:
     def __init__(self):
         postgres = os.environ.get('POSTGRES_HOST_IP')
+        postgres = "localhost"
         self.connection = psycopg2.connect(
             host=postgres,
             database="postgres",

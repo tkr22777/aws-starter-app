@@ -1,5 +1,7 @@
 *.DS_Store
 
+# some local commands that may contain secrects
+secret.txt
+
 # compiled python files
 *.pyc
-secret.txt

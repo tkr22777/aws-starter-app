@@ -4,9 +4,9 @@ from jose import jwt
 from jose.exceptions import JWTError
 from fastapi import HTTPException, Request
 
-user_pool_id = 'us-east-2_tANdynDkd'
+user_pool_id = 'us-east-2_dOcPPcCEd'
 region = 'us-east-2'
-app_client_id = '4v8unkdrov7h5r6laspfk1o190'
+app_client_id = '374am33565fed3tv5n3p8agqb2'
 iss = f'https://cognito-idp.{region}.amazonaws.com/{user_pool_id}'
 keys_url = f'{iss}/.well-known/jwks.json'
 
