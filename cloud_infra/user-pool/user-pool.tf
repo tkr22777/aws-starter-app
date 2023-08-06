@@ -37,7 +37,7 @@ resource "aws_cognito_user_pool" "white_app_users" {
   schema {
     attribute_data_type      = "String"
     name                     = "role"
-    required                 = true
+    required                 = false
     mutable                  = true
     developer_only_attribute = false
 
@@ -48,13 +48,34 @@ resource "aws_cognito_user_pool" "white_app_users" {
   }
 }
 
-resource "aws_cognito_user_pool_client" "client" {
-  name = "client"
+resource "aws_cognito_user_pool_client" "frontend" {
+  name = "frontend"
 
   user_pool_id = aws_cognito_user_pool.white_app_users.id
 
   generate_secret     = false
 
   // TO DO: change to more flows
-  explicit_auth_flows = ["ADMIN_NO_SRP_AUTH"] 
+  explicit_auth_flows = [
+    //"ALLOW_ADMIN_USER_PASSWORD_AUTH",
+    //"ALLOW_USER_SRP_AUTH",
+    //"ALLOW_REFRESH_TOKEN_AUTH",
+    "ADMIN_NO_SRP_AUTH"
+  ] 
 }
+
+/*
+resource "aws_cognito_user_pool_client" "backend" {
+  name = "backend"
+
+  user_pool_id = aws_cognito_user_pool.white_app_users.id
+
+  generate_secret     = true
+
+  // TO DO: change to more flows
+  explicit_auth_flows = [
+    "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH"
+  ] 
+}
+*/
