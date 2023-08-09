@@ -1,5 +1,5 @@
 # Current features: 
-- Setting up terraform and AWS region (01-vpc.tf)
+- Setting up terraform and AWS region (00-main.tf)
 - Setting up VPC, Internet Gateway, Route Table (01-vpc.tf)
 - Setting up Subnet and Subnet-Route Table association (02-subnet.tf)
 - Setting up Security Group to configure ingress/egress (03-security.tf)
