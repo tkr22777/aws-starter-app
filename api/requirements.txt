@@ -1,5 +1,5 @@
-uvicorn
-fastapi
-psycopg2-binary
-python-jose[cryptography]
-requests
+uvicorn==0.23.2
+fastapi==0.101.0
+psycopg2-binary==2.9.7
+python-jose[cryptography]==3.3.0
+requests==2.31.0
