@@ -1,4 +1,3 @@
-# dao/usersettings_dao.py
 import os
 import psycopg2
 from typing import Optional

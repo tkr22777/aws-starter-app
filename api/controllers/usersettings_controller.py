@@ -1,6 +1,4 @@
-# controllers/usersettings_controller.py
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Optional
 from .auth import validate_token
 
 from models.usersettings import UserSettings
