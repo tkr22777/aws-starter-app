@@ -36,7 +36,7 @@ spin_up_postgres_container:
 	-docker network create --subnet=${SUBNET} ${NETWORK_NAME}
 	-docker rm -f ${POSTGRES_INSTANCE_NAME} #cleanup existing instance
 	docker run --net ${NETWORK_NAME} --ip ${POSTGRES_HOST_IP} -p 5432:5432 \
-		--name ${POSTGRES_INSTANCE_NAME} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -i -t -d postgres
+		--name ${POSTGRES_INSTANCE_NAME} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -i -t -d postgres:13
 
 create_postgres_tables:
 	create_table_script=$$(cat ./db/create_table.sql);\
