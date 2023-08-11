@@ -7,7 +7,8 @@ services:
     environment:
       POSTGRES_HOST: postgres_db
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
   postgres_db:
     image: "postgres:13"
     environment:
@@ -18,3 +19,10 @@ services:
       - "5432:5432"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    user: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 2s

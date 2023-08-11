@@ -5,13 +5,16 @@ from jose import jwt
 from jose.exceptions import JWTError
 from fastapi import HTTPException, Request
 
+DEPLOYMENT_ENV_LOCAL = "local"
+BYPASS_TOKEN = "BYPASS_TOKEN"
+
 user_pool_id = 'us-east-2_dOcPPcCEd'
 region = 'us-east-2'
 app_client_id = '374am33565fed3tv5n3p8agqb2'
 iss = f'https://cognito-idp.{region}.amazonaws.com/{user_pool_id}'
 keys_url = f'{iss}/.well-known/jwks.json'
 DEPLOYMENT_ENV = os.environ.get('DEPLOYMENT_ENV')
-DEPLOYMENT_ENV = DEPLOYMENT_ENV if DEPLOYMENT_ENV else "local"
+DEPLOYMENT_ENV = DEPLOYMENT_ENV if DEPLOYMENT_ENV else DEPLOYMENT_ENV_LOCAL
 
 def get_keys(url: str):
     response = requests.get(url)
@@ -34,7 +37,7 @@ def validate_token(request: Request):
         raise HTTPException(status_code=403, detail="Invalid authorization header")
 
     token = auth_header.split(' ')[1]
-    if token == "BYPASSTOKEN" and DEPLOYMENT_ENV == "local":
+    if token == BYPASS_TOKEN and DEPLOYMENT_ENV == DEPLOYMENT_ENV_LOCAL:
         return
 
     headers = jwt.get_unverified_header(token)
