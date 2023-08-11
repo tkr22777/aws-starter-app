@@ -1,7 +1,8 @@
 # subnet (range of ip addresses) within the vpc
 resource "aws_subnet" "app_sn" {
-  cidr_block = "${cidrsubnet(aws_vpc.test_env.cidr_block, 3, 1)}"
   vpc_id = "${aws_vpc.test_env.id}"
+  cidr_block = "10.0.1.0/24"
+  availability_zone = "us-east-2a"
 }
 
 resource "aws_route_table_association" "subnet_association" {
