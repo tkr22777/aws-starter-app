@@ -1,4 +1,3 @@
-# logic/usersettings_logic.py
 from typing import Optional
 
 from models.usersettings import UserSettings

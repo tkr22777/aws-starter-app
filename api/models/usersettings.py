@@ -1,4 +1,3 @@
-# models/usersettings.py
 from pydantic import BaseModel
 
 class UserSettings(BaseModel):

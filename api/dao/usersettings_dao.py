@@ -6,7 +6,7 @@ from models.usersettings import UserSettings
 
 class UserSettingsDAO:
     def __init__(self):
-        postgres_host = os.environ.get('POSTGRES_HOST_IP')
+        postgres_host = os.environ.get('POSTGRES_HOST')
         postgres_host = postgres_host if postgres_host else "localhost"
 
         postgres_db = os.environ.get('POSTGRES_DB')
