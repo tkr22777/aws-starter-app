@@ -17,5 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Expose the port on which the FastAPI application will run
 EXPOSE 8000
 
+# Set envs
+ENV POSTGRES_HOST=postgres_db
+
 # Run the FastAPI application using Uvicorn when the container starts
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

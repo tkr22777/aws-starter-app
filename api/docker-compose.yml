@@ -3,14 +3,14 @@ services:
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "80:8000"
     environment:
       POSTGRES_HOST: postgres_db
     depends_on:
       postgres_db:
         condition: service_healthy
   postgres_db:
-    image: "postgres:13"
+    image: "postgres:13.11"
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
