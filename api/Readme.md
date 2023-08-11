@@ -1,17 +1,13 @@
-Build, test and deployment scripts are in *Makefile*
+# Steps to run/test the project
 
-TODO:
-* Add integration tests
+- Install Python 3.10
+- Install dependencies: `pip3 install -r requirements.txt`
+- Build and run the service containers: `docker-compose up --build`
+- Run integration tests: `pytest test_integration.py`
 
-Developed and tested on Python version: 3.10
+## Test using manual curl command
 
-Build docker image:
-
-```
-make build_docker_image
-```
-
-Create a new UserSetting:
+### Create a new UserSetting:
 ```
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer BYPASSTOKEN" -d '{
     "user_id": "user127",
@@ -21,12 +17,12 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer BYPAS
 }' http://localhost:8000/v1/usersettings/
 ```
 
-Get a specific UserSetting by user_id:
+### Get a specific UserSetting by user_id:
 ```
 curl -X GET -H "Authorization: Bearer BYPASSTOKEN" http://localhost:8000/v1/usersettings/{user_id}
 ```
 
-Update an existing UserSetting by user_id:
+### Update an existing UserSetting by user_id:
 ```
 curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer BYPASSTOKEN" -d '{
     "user_id": "user123",
@@ -36,7 +32,7 @@ curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer BYPASS
 }' http://localhost:8000/v1/usersettings/{user_id}
 ```
 
-Delete a UserSetting by user_id:
+### Delete a UserSetting by user_id:
 ```
 curl -X DELETE -H "Authorization: Bearer BYPASSTOKEN" http://localhost:8000/v1/usersettings/{user_id}
 ```
