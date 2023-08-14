@@ -46,7 +46,7 @@ const SignUp = () => {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h3 className="text-center mb-4">Register</h3>
+          <h3 className="text-center mb-4">Sign up</h3>
           <form onSubmit={handleRegister}>
             <div className="mb-3">
               <label htmlFor="email" className="form-label">
