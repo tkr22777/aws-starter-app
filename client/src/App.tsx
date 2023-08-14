@@ -11,6 +11,9 @@ function App() {
       <header className="App-header">
         <Router>
           <Switch>
+            <Route path="">
+              <ViewToken />
+            </Route>
             <Route path="/sign-up">
               <SignUp />
             </Route>
