@@ -7,8 +7,9 @@ headers = { "Authorization": "Bearer BYPASS_TOKEN" }
 def test_usersettings_api():
     base_url = "http://localhost:80/v1/usersettings"
 
-    # CREATE
     us = UserSettings(user_id="uid_101", setting_1="s1", setting_2=1, setting_3=False)
+
+    # CREATE
     response = requests.post(f"{base_url}/", headers=headers, json=us.model_dump())
     assert response.status_code == 200
     assert response.json() == us.model_dump()
@@ -27,3 +28,4 @@ def test_usersettings_api():
     # DELETE
     response = requests.delete(f"{base_url}/{us.user_id}", headers=headers)
     assert response.status_code == 200
+    print("successfully ran and asserted base test cases!")

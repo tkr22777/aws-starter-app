@@ -1,5 +1,5 @@
 test:
-	# the test script
+	pytest # pytest must be installed `pip install pytest`
 
 start:
 	uvicorn main:app --reload
