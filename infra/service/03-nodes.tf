@@ -1,7 +1,10 @@
+# Defines a security group named 'ec2_sg' for EC2 instances within the 'test_env' VPC.
+# This security group configures both inbound and outbound traffic rules.
 resource "aws_security_group" "ec2_sg" {
     description = "Security Group for EC2"
     vpc_id      = aws_vpc.test_env.id
 
+    # Inbound rule allowing SSH access from any IP address.
     ingress {
         description = "SSH"
         cidr_blocks = [
@@ -12,6 +15,7 @@ resource "aws_security_group" "ec2_sg" {
         protocol = "tcp"
     }
 
+    # Inbound rule for HTTP traffic, allowing access from any IP address.
     ingress {
         description = "HTTP"
         cidr_blocks = [
@@ -22,6 +26,7 @@ resource "aws_security_group" "ec2_sg" {
         protocol = "tcp"
     }
 
+    # Inbound rule for HTTPS traffic, permitting access from any IP address.
     ingress {
         description = "HTTPS"
         cidr_blocks = [
@@ -32,17 +37,19 @@ resource "aws_security_group" "ec2_sg" {
         protocol = "tcp"
     }
 
+    # Outbound rule allowing all traffic to any destination.
     egress {
         cidr_blocks = [
             "0.0.0.0/0"
         ]
-        from_port = 0
+        from_port = 0     # All ports
         to_port = 0
-        protocol = "-1"
+        protocol = "-1"   # All protocols
     }
 }
 
-# an ec2 instance
+# Creates an EC2 instance named 'app_server_001'.
+# This instance is configured with a predefined AMI, instance type, and associated with a specific subnet and security group.
 resource "aws_instance" "app_server_001" {
   ami           = "ami-00c6c849418b7612c"
   instance_type = "t2.nano"
@@ -54,6 +61,7 @@ resource "aws_instance" "app_server_001" {
     "${aws_security_group.ec2_sg.id}"
   ]
 
+  # script executed on instance initialization.
   user_data = <<-EOT
     #!/bin/bash
     echo 'temp from ec2 init' > /tmp/temp_test.txt
@@ -61,7 +69,7 @@ resource "aws_instance" "app_server_001" {
     sudo yum install -y docker
     sudo service docker start
     sudo usermod -a -G docker ec2-user
-    sudo dns install -y postgresql15.x86_64
+    sudo yum install -y postgresql15.x86_64
   EOT
 }
 

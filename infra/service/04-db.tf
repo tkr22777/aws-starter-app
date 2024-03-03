@@ -1,3 +1,5 @@
+# security group for an RDS instance within the 'test_env' VPC.
+# configures network access rules tailored for database connectivity.
 resource "aws_security_group" "rds_sg" {
     description = "Security Group for RDS"
     vpc_id      = aws_vpc.test_env.id
@@ -22,13 +24,16 @@ resource "aws_security_group_rule" "extra_rule" {
   source_security_group_id = "${aws_security_group.ec2_sg.id}"
 }
 
-# extra subnet required for db_subnet_group
+# an additional subnet named 'rds_subnet' within the 'test_env' VPC for RDS usage
+# configured with an IP range of 10.0.2.0 to 10.0.2.255 (10.0.2.0/24), located in the 'us-east-2b' availability zone.
 resource "aws_subnet" "rds_subnet" {
   vpc_id = "${aws_vpc.test_env.id}"
   cidr_block = "10.0.2.0/24"
   availability_zone = "us-east-2b"
 }
 
+# This group is essential for RDS instances to ensure they are placed within the specified subnets for high availability and redundancy.
+# To include different subnets, modify the 'subnet_ids' list accordingly.
 resource "aws_db_subnet_group" "rds_sng" {
   name       = "rds_sng"
   subnet_ids = ["${aws_subnet.app_sn.id}", "${aws_subnet.rds_subnet.id}"] # Your subnet IDs here
@@ -39,10 +44,10 @@ resource "aws_db_instance" "my_database" {
   allocated_storage    = 20                    # 20 GB, adjust as needed
   storage_type         = "gp2"                 # General Purpose storage
   engine               = "postgres"            # PostgreSQL engine
-  engine_version       = "13.11"                # Specific PostgreSQL version
+  engine_version       = "13.11"               # Specific PostgreSQL version
   instance_class       = "db.t3.micro"         # Instance class, choose based on needs
   db_name              = "postgres"            # DB name
-  username             = "postgres"                # DB username
+  username             = "postgres"            # DB username
   password             = "abcd1234"            # DB password
   parameter_group_name = "default.postgres13"  # Default parameter group for PostgreSQL 13
 
