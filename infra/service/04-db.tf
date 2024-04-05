@@ -36,7 +36,11 @@ resource "aws_subnet" "rds_subnet" {
 # To include different subnets, modify the 'subnet_ids' list accordingly.
 resource "aws_db_subnet_group" "rds_sng" {
   name       = "rds_sng"
-  subnet_ids = ["${aws_subnet.app_sn.id}", "${aws_subnet.rds_subnet.id}"] # Your subnet IDs here
+  subnet_ids = [
+    "${aws_subnet.app_sn.id}",
+    "${aws_subnet.rds_subnet.id}"
+    # add more as needed
+  ] 
 }
 
 # RDS instance
