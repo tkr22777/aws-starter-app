@@ -5,6 +5,8 @@
 - Build and run the service containers: `docker-compose up --build`
 - Run integration tests: `pytest test_integration.py`
 
+##### The AuthN and AuthZ logic are in the controllers/auth.py file
+
 ## Test using manual curl command
 
 ### Create a new UserSetting:
@@ -14,12 +16,12 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer BYPAS
     "setting_1": "Value 1",
     "setting_2": 42,
     "setting_3": true
-}' http://localhost:80/v1/usersettings/
+}' http://localhost:8000/v1/usersettings/
 ```
 
 ### Get a specific UserSetting by user_id:
 ```
-curl -X GET -H "Authorization: Bearer BYPASS_TOKEN" http://localhost:80/v1/usersettings/{user_id}
+curl -X GET -H "Authorization: Bearer BYPASS_TOKEN" http://localhost:8000/v1/usersettings/{user_id}
 ```
 
 ### Update an existing UserSetting by user_id:
@@ -29,10 +31,10 @@ curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer BYPASS
     "setting_1": "Updated Value",
     "setting_2": 99,
     "setting_3": false
-}' http://localhost:80/v1/usersettings/{user_id}
+}' http://localhost:8000/v1/usersettings/{user_id}
 ```
 
 ### Delete a UserSetting by user_id:
 ```
-curl -X DELETE -H "Authorization: Bearer BYPASS_TOKEN" http://localhost:80/v1/usersettings/{user_id}
+curl -X DELETE -H "Authorization: Bearer BYPASS_TOKEN" http://localhost:8000/v1/usersettings/{user_id}
 ```
