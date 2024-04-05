@@ -53,7 +53,9 @@ resource "aws_security_group" "ec2_sg" {
 resource "aws_instance" "app_server_001" {
   ami           = "ami-00c6c849418b7612c"
   instance_type = "t2.nano"
-  key_name      = "test_key"
+
+  # the following test_key was defined in aws console's Key Pairs EC2 feature
+  key_name      = "test_key" 
 
   subnet_id = "${aws_subnet.app_sn.id}"
 
@@ -79,7 +81,7 @@ resource "aws_eip" "eip_app_server_001" {
   vpc      = true
 }
 
-# Example output to get the endpoint of the RDS
+# Example output to get the endpoint
 output "ec2_hostname" {
   description = "The hostname for the ec2 instance"
   value       = aws_eip.eip_app_server_001.public_dns

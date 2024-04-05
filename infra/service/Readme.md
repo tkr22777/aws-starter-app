@@ -2,8 +2,8 @@
 - Setting up terraform and AWS region (00-main.tf)
 - Setting up VPC, Internet Gateway, Route Table (01-vpc.tf)
 - Setting up Subnet and Subnet-Route Table association (02-subnet.tf)
-- Setting up Security Group to configure ingress/egress (03-security.tf)
-- Setting up EC2 instance, ElasticIP for the instance and associating the SG with EC2 (04-nodes.tf)
+- Setting up App EC2 instance and its corresponding Security Group (03-nodes.tf)
+- Setting up RDS instance, its Subnet and Security Group  (04-db.tf)
 
 # Steps
 - 1. Install aws-cli
