@@ -5,7 +5,7 @@ headers = { "Authorization": "Bearer BYPASS_TOKEN" }
 
 # dependencies must, first be ran: docker-compose up --build
 def test_usersettings_api():
-    base_url = "http://localhost:80/v1/usersettings"
+    base_url = "http://localhost:8000/v1/usersettings"
 
     us = UserSettings(user_id="uid_101", setting_1="s1", setting_2=1, setting_3=False)
 
