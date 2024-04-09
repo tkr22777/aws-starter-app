@@ -1,6 +1,6 @@
-resource "aws_cognito_user_pool" "white_app_users" {
+resource "aws_cognito_user_pool" "starter_app_users" {
 
-  name = "white_app_users"
+  name = "starter_app_users"
 
   username_attributes = ["email"]
 
@@ -16,7 +16,7 @@ resource "aws_cognito_user_pool" "white_app_users" {
     minimum_length    = 8
     require_lowercase = true
     require_numbers   = true
-    require_symbols   = true
+    require_symbols   = false
     require_uppercase = true
   }
 
@@ -51,7 +51,7 @@ resource "aws_cognito_user_pool" "white_app_users" {
 resource "aws_cognito_user_pool_client" "frontend" {
   name = "frontend"
 
-  user_pool_id = aws_cognito_user_pool.white_app_users.id
+  user_pool_id = aws_cognito_user_pool.starter_app_users.id
 
   generate_secret     = false
 
@@ -68,7 +68,7 @@ resource "aws_cognito_user_pool_client" "frontend" {
 resource "aws_cognito_user_pool_client" "backend" {
   name = "backend"
 
-  user_pool_id = aws_cognito_user_pool.white_app_users.id
+  user_pool_id = aws_cognito_user_pool.blank_app_users.id
 
   generate_secret     = true
 
