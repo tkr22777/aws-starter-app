@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "user_setting_app" {
-  name                 = "user_setting_app"
+resource "aws_ecr_repository" "starter_app" {
+  name                 = "starter_app"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -9,7 +9,7 @@ resource "aws_ecr_repository" "user_setting_app" {
   tags = {}
 }
 
-output "user_setting_app_ecr_repo" {
-  description = "The ecr repo url for the user_setting_app_images"
-  value       = aws_ecr_repository.user_setting_app.repository_url
+output "starter_app_ecr_repo" {
+  description = "The ecr repo url for the starter app"
+  value       = aws_ecr_repository.starter_app.repository_url
 }
