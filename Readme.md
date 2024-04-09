@@ -1,6 +1,5 @@
 TODO:
-* Set up ECS
-* Route to public
+* Setup public routing to ECS
 * Frontend UI
 * FE with authentication
 
