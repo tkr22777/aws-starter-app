@@ -5,7 +5,7 @@ type UserSettings = {
   setting_3: boolean;
 };
 
-const API_ENDPOINT = "http://localhost:8000" // "https://your-backend-service-url.com"; // Replace with your backend service URL
+const API_ENDPOINT = "http://localhost:80" // "https://your-backend-service-url.com"; // Replace with your backend service URL
 
 class UserSettingsService {
 

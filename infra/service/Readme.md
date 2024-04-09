@@ -16,6 +16,40 @@
 - 8. Run the image: `docker run -p 80:8000 --name user_setting_app_instance -i -t -d user_setting_app`
 - 9. DB login: `psql -h db-endpoint -p 5432 -U postgres -d postgres`
 
+
+# Using ECR:
+* Had to create ECR access policy for the terraform_user:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:GetRepositoryPolicy",
+                "ecr:DescribeRepositories",
+                "ecr:ListImages",
+                "ecr:DescribeImages",
+                "ecr:BatchGetImage"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+* connect docker with aws ecr:
+`aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 894135990422.dkr.ecr.us-east-2.amazonaws.com`
+
+* other commands:
+```
+aws ecr describe-repositories
+aws ecr list-images
+docker pull 894135990422.dkr.ecr.us-east-2.amazonaws.com/your-repo-name:your-image-tag
+```
+
 # To do:
 - 1. automate the server deployment to the node
 - 2. the test_key is created manually using AWS console UI, autoamte that
