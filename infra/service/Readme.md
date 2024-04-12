@@ -10,15 +10,13 @@
 # Steps
 - 1. Install aws-cli
 - 2. Configure AWS secrets: `aws configure`
-- 3. (a) Run: `terraform import aws_iam_user.terraform_user terraform_user`
-- 3. (b) Run: `terraform apply -auto-approve`
+- 3. Run: `terraform apply -auto-approve`
 - 4. Check hostname: `terraform output -json > output.json`
 - 5. Copy service code: `scp -i test_key.pem -r ../../api ec2-user@hostname:~`
 - 6. Login: `ssh -i test_key.pem ec2-user@hostname; cd api`
 - 7. Build docker image: `docker build --no-cache=true -t starter_app .`
 - 8. Run the image: `docker run -p 80:8000 --name starter_app_instance -i -t -d starter_app`
 - 9. DB login: `psql -h db-endpoint -p 5432 -U postgres -d postgres`
-
 
 # Using ECR:
 * connect docker with aws ecr:
@@ -32,6 +30,5 @@ docker pull 894135990422.dkr.ecr.us-east-2.amazonaws.com/your-repo-name:your-ima
 ```
 
 # To do:
-- clean, organize and seperate user role assignments related terraform from service-infra
 - 1. the test_key is created manually using AWS console UI, autoamte that
 - 2. review security
