@@ -12,24 +12,10 @@ resource "aws_iam_policy" "ecs_user_group_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "ecr:GetAuthorizationToken",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:GetRepositoryPolicy",
-        "ecr:DescribeRepositories",
-        "ecr:ListImages",
-        "ecr:DescribeImages",
-        "ecr:BatchGetImage",
-        "ecs:CreateCluster",
-        "ecs:DeleteCluster",
-        "ecs:DescribeClusters",
-        "ecs:RegisterTaskDefinition",
-        "ecs:DescribeTaskDefinition",
-        "ecs:DeregisterTaskDefinition",
-        "ecs:CreateService",
-        "ecs:UpdateService",
-        "ecs:DeleteService",
-        "ecs:DescribeServices",
+        "iam:*",
+        "ec2:*",
+        "rds:*",
+        "ecr:*",
         "ecs:*"
       ],
       "Resource": "*"
