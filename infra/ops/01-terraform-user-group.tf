@@ -16,7 +16,8 @@ resource "aws_iam_policy" "ecs_user_group_policy" {
         "ec2:*",
         "rds:*",
         "ecr:*",
-        "ecs:*"
+        "ecs:*",
+        "cognito-idp:*"
       ],
       "Resource": "*"
     }
