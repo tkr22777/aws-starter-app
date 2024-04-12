@@ -32,5 +32,6 @@ docker pull 894135990422.dkr.ecr.us-east-2.amazonaws.com/your-repo-name:your-ima
 ```
 
 # To do:
+- clean, organize and seperate user role assignments related terraform from service-infra
 - 1. the test_key is created manually using AWS console UI, autoamte that
 - 2. review security
