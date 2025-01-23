@@ -15,7 +15,7 @@ resource "aws_security_group" "rds_sg" {
 
 # allow outgoing traffic from EC2 to PostgreSQL
 # seperately created to avoid cycle error
-resource "aws_security_group_rule" "extra_rule" {
+resource "aws_security_group_rule" "rds_sg_extra_rule" {
   security_group_id        = "${aws_security_group.ec2_sg.id}"  # target security group
   from_port                = 5432
   to_port                  = 5432
@@ -43,6 +43,7 @@ resource "aws_db_subnet_group" "rds_sng" {
   ] 
 }
 
+# commenting out until actually required for usage
 # # RDS instance
 # resource "aws_db_instance" "my_database" {
 #   allocated_storage    = 20                    # 20 GB, adjust as needed
