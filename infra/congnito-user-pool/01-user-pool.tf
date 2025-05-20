@@ -57,10 +57,10 @@ resource "aws_cognito_user_pool_client" "frontend" {
 
   // TO DO: change to more flows
   explicit_auth_flows = [
-    //"ALLOW_ADMIN_USER_PASSWORD_AUTH",
-    //"ALLOW_USER_SRP_AUTH",
-    //"ALLOW_REFRESH_TOKEN_AUTH",
-    "ADMIN_NO_SRP_AUTH"
+    //"ALLOW_ADMIN_USER_PASSWORD_AUTH", // Allows admin authentication using username and password
+    //"ALLOW_USER_SRP_AUTH", // Allows user authentication using Secure Remote Password protocol
+    //"ALLOW_REFRESH_TOKEN_AUTH", // Allows refresh token authentication, enabling longer-lived sessions
+    "ADMIN_NO_SRP_AUTH" // Allows admin authentication without Secure Remote Password protocol, enabling simpler but less secure admin authentication flows
   ] 
 }
 
