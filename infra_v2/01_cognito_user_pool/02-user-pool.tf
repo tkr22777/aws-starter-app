@@ -2,6 +2,7 @@ data "aws_region" "current" {}
 
 resource "aws_cognito_user_pool" "app_user_pool" {
   name = "${var.app_name}-user-pool"
+  deletion_protection = "INACTIVE"
 
   username_attributes = ["email"]
 
@@ -62,13 +63,17 @@ resource "aws_cognito_user_pool_client" "frontend" {
 
   generate_secret     = false
 
-  // TO DO: change to more flows
   explicit_auth_flows = [
-    //"ALLOW_ADMIN_USER_PASSWORD_AUTH",
-    //"ALLOW_USER_SRP_AUTH",
-    //"ALLOW_REFRESH_TOKEN_AUTH",
-    "ADMIN_NO_SRP_AUTH"
-  ] 
+    "ALLOW_USER_SRP_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH"
+  ]
+  
+  callback_urls        = var.app_callback_urls
+  logout_urls          = var.app_logout_urls
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_flows  = ["code", "implicit"]
+  allowed_oauth_scopes = ["phone", "email", "openid", "profile", "aws.cognito.signin.user.admin"]
+  supported_identity_providers = ["COGNITO"]
 }
 
 /*
