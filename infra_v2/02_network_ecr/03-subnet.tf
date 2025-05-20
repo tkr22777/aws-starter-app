@@ -1,6 +1,6 @@
 resource "aws_subnet" "app_vpc_sn" {
   vpc_id            = aws_vpc.app_vpc.id
-  cidr_block        = "10.0.1.0/24"
+  cidr_block        = var.subnet_cidr_block
   availability_zone = var.availability_zone
   
   # auto-assign public IP addresses for instances launched in this subnet
@@ -21,6 +21,7 @@ resource "aws_route_table_association" "subnet_association" {
   route_table_id = aws_route_table.app_vpc_rt.id
 }
 
+# Outputs for the subnet and related resources
 output "subnet_id" {
   description = "The ID of the subnet"
   value       = aws_subnet.app_vpc_sn.id

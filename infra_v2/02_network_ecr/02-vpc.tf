@@ -1,14 +1,15 @@
 # Creates a Virtual Private Cloud (VPC) named '<app_name>_vpc'.
 # This VPC uses the IP address range 10.0.0.0/16
 resource "aws_vpc" "app_vpc" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = true
   enable_dns_support   = true
   
   # Enable IPv6 support (optional but recommended for future-proofing)
   assign_generated_ipv6_cidr_block = true
 
-  # Enable VPC flow logs for network monitoring (recommended for security)
+  # enable_network_address_usage_metrics enables VPC Network Address Usage metrics.
+  # For full VPC Flow Logs (to CloudWatch Logs or S3), configure an aws_flow_log resource.
   enable_network_address_usage_metrics = true
 
   tags = {
@@ -47,6 +48,7 @@ resource "aws_route_table" "app_vpc_rt" {
   }
 }
 
+# Outputs for the VPC and related resources
 output "vpc_id" {
   description = "The ID of the VPC"
   value       = aws_vpc.app_vpc.id
