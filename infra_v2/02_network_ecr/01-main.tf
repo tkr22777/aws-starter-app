@@ -16,5 +16,6 @@ terraform {
 }
 
 provider "aws" {
+  profile = "terraform_user"
   region  = "us-east-1"
 }

@@ -1,5 +1,5 @@
-resource "aws_subnet" "turbo_test_vpc_sn" {
-  vpc_id            = aws_vpc.turbo_test_vpc.id
+resource "aws_subnet" "app_vpc_sn" {
+  vpc_id            = aws_vpc.app_vpc.id
   cidr_block        = "10.0.1.0/24"
   availability_zone = var.availability_zone
   
@@ -7,16 +7,36 @@ resource "aws_subnet" "turbo_test_vpc_sn" {
   map_public_ip_on_launch = true
 
   # IPv6 configuration
-  ipv6_cidr_block = cidrsubnet(aws_vpc.turbo_test_vpc.ipv6_cidr_block, 8, 1)
+  ipv6_cidr_block = cidrsubnet(aws_vpc.app_vpc.ipv6_cidr_block, 8, 1)
   assign_ipv6_address_on_creation = true
 
   tags = {
-    name = "${var.app_name}_vpc_subnet"
+    name = "${var.app_name}-vpc-subnet"
   }
 }
 
 # enables resources within the subnet to follow the routing policies
 resource "aws_route_table_association" "subnet_association" {
-  subnet_id      = aws_subnet.turbo_test_vpc_sn.id
-  route_table_id = aws_route_table.turbo_test_vpc_rt.id
+  subnet_id      = aws_subnet.app_vpc_sn.id
+  route_table_id = aws_route_table.app_vpc_rt.id
+}
+
+output "subnet_id" {
+  description = "The ID of the subnet"
+  value       = aws_subnet.app_vpc_sn.id
+}
+
+output "subnet_cidr" {
+  description = "The CIDR block of the subnet"
+  value       = aws_subnet.app_vpc_sn.cidr_block
+}
+
+output "subnet_availability_zone" {
+  description = "The availability zone of the subnet"
+  value       = aws_subnet.app_vpc_sn.availability_zone
+}
+
+output "subnet_ipv6_cidr_block" {
+  description = "The IPv6 CIDR block of the subnet"
+  value       = aws_subnet.app_vpc_sn.ipv6_cidr_block
 }
