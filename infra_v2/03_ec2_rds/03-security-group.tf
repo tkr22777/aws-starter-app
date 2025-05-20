@@ -1,14 +1,12 @@
 # security group for EC2 instances within the 'turbo_test_vpc' VPC.
 resource "aws_security_group" "ec2_sg" {
     description = "Security Group for EC2"
-    vpc_id      = data.aws_vpc.turbo_test_vpc.id
+    vpc_id      = data.aws_vpc.app_vpc.id
 
     # inbound rule allowing SSH access from any IP address.
     ingress {
         description = "SSH"
-        cidr_blocks = [
-            "0.0.0.0/0"
-        ]
+        cidr_blocks = [var.allowed_ssh_cidr]
         from_port = 22
         to_port = 22
         protocol = "tcp"

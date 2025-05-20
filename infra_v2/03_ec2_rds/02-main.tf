@@ -16,5 +16,14 @@ terraform {
 }
 
 provider "aws" {
+  profile = "terraform_user"
   region  = "us-east-1"
+
+  default_tags {
+    tags = {
+      Environment = "development"
+      Project     = var.app_name
+      ManagedBy   = "terraform"
+    }
+  }
 }

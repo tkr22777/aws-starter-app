@@ -6,7 +6,7 @@ resource "tls_private_key" "generated_key" {
 
 # Create a key pair in AWS
 resource "aws_key_pair" "generated_key" {
-  key_name   = "${var.app_name}_ec2_key"
+  key_name   = "${var.app_name}-ec2-key"
   public_key = tls_private_key.generated_key.public_key_openssh
 }
 
