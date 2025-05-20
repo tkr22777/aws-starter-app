@@ -38,6 +38,7 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 }
 
+# Outputs for the Terraform state bucket and related resources
 output "state_bucket_name" {
   description = "The name of the S3 bucket storing Terraform state"
   value       = aws_s3_bucket.terraform_state.id

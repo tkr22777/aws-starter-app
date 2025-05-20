@@ -52,6 +52,7 @@ resource "aws_iam_group_policy_attachment" "terraform_user_policy_attachment" {
   policy_arn = aws_iam_policy.terraform_user_policy.arn
 }
 
+# Outputs for the Terraform user and related resources
 output "terraform_user_name" {
   description = "The name of the created IAM user"
   value       = aws_iam_user.terraform_user.name
