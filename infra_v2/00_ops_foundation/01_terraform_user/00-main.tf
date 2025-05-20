@@ -19,4 +19,12 @@ terraform {
 provider "aws" {
   profile = "root"
   region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Environment = "foundation-iam"
+      Project     = "ops" // Can be var.app_name if defined in this sub-module's vars
+      ManagedBy   = "terraform"
+    }
+  }
 }
