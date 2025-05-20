@@ -27,7 +27,9 @@ resource "aws_iam_policy" "terraform_user_group_policy" {
         Action = [
           "ec2:Describe*", "rds:Describe*", "ecr:Describe*", "ecr:Get*", "ecr:List*",
           "ecs:Describe*", "ecs:List*", "cognito-idp:Describe*", "cognito-idp:List*", "cognito-idp:Get*",
-          "s3:GetBucketLocation", "s3:ListAllMyBuckets", "iam:ListAccountAliases", "iam:GetAccountSummary",
+          "s3:GetBucketLocation", "s3:ListAllMyBuckets",
+          "iam:ListAccountAliases", "iam:GetAccountSummary",
+          "iam:GetUser", "iam:ListUsers", "iam:GetRole", "iam:ListRoles", "iam:GetPolicy", "iam:ListPolicies", "iam:ListAttachedRolePolicies", "iam:GetRolePolicy", "iam:ListRolePolicies",
           "sts:GetCallerIdentity", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricData",
           "cloudwatch:GetMetricStatistics", "cloudwatch:ListMetrics"
         ],
@@ -85,9 +87,11 @@ resource "aws_iam_policy" "terraform_user_group_policy" {
         Sid    = "IAMRoleManagement",
         Effect = "Allow",
         Action = [
-          "iam:PassRole", "iam:GetUser", "iam:ListUsers", "iam:GetRole", "iam:ListRoles", "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
-          "iam:GetPolicy", "iam:ListPolicies", "iam:CreatePolicy", "iam:DeletePolicy", "iam:AttachRolePolicy", "iam:DetachRolePolicy", "iam:ListAttachedRolePolicies",
-          "iam:PutRolePolicy", "iam:GetRolePolicy", "iam:DeleteRolePolicy", "iam:ListRolePolicies"
+          "iam:PassRole", 
+          "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
+          "iam:CreatePolicy", "iam:DeletePolicy",
+          "iam:AttachRolePolicy", "iam:DetachRolePolicy", 
+          "iam:PutRolePolicy", "iam:DeleteRolePolicy"
         ],
         Resource = "*"
       }
