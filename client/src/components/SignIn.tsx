@@ -30,6 +30,7 @@ const SignIn = () => {
         console.log("Authentication Result:");
         console.log(result);
         console.log("Access token + " + result.getAccessToken().getJwtToken());
+        // handle successful authentication
       },
       onFailure: (err) => {
         console.error(err);
