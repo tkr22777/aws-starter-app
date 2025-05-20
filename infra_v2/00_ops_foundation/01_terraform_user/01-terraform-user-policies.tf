@@ -1,9 +1,9 @@
 resource "aws_iam_user" "terraform_user" {
-  name = "terraform_user"
+  name = var.terraform_user_name
 }
 
 resource "aws_iam_group_membership" "example_membership" {
-  name = "example_user_membership"
+  name = var.terraform_user_group_membership_name
 
   users = [
     aws_iam_user.terraform_user.name,
@@ -13,11 +13,11 @@ resource "aws_iam_group_membership" "example_membership" {
 }
 
 resource "aws_iam_group" "terraform_user_group" {
-  name = "terraform_user_group"
+  name = var.terraform_user_group_name
 }
 
-resource "aws_iam_policy" "terraform_user_policy" {
-  name        = "terraform_user_policy"
+resource "aws_iam_policy" "terraform_user_group_policy" {
+  name        = var.terraform_user_group_policy_name
   description = "Policy for terraform infrastructure management with least privilege in mind"
   policy      = jsonencode({
     Version = "2012-10-17"
@@ -26,25 +26,11 @@ resource "aws_iam_policy" "terraform_user_policy" {
         Sid    = "ReadOnlyAccess",
         Effect = "Allow",
         Action = [
-          "ec2:Describe*",
-          "rds:Describe*",
-          "ecr:Describe*",
-          "ecr:Get*",
-          "ecr:List*",
-          "ecs:Describe*",
-          "ecs:List*",
-          "cognito-idp:Describe*",
-          "cognito-idp:List*",
-          "cognito-idp:Get*",
-          "s3:GetBucketLocation",
-          "s3:ListAllMyBuckets",
-          "iam:ListAccountAliases",
-          "iam:GetAccountSummary",
-          "sts:GetCallerIdentity",
-          "cloudwatch:DescribeAlarms",
-          "cloudwatch:GetMetricData",
-          "cloudwatch:GetMetricStatistics",
-          "cloudwatch:ListMetrics"
+          "ec2:Describe*", "rds:Describe*", "ecr:Describe*", "ecr:Get*", "ecr:List*",
+          "ecs:Describe*", "ecs:List*", "cognito-idp:Describe*", "cognito-idp:List*", "cognito-idp:Get*",
+          "s3:GetBucketLocation", "s3:ListAllMyBuckets", "iam:ListAccountAliases", "iam:GetAccountSummary",
+          "sts:GetCallerIdentity", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricData",
+          "cloudwatch:GetMetricStatistics", "cloudwatch:ListMetrics"
         ],
         Resource = "*"
       },
@@ -52,26 +38,15 @@ resource "aws_iam_policy" "terraform_user_policy" {
         Sid    = "EC2ECRECSCognitoManagement",
         Effect = "Allow",
         Action = [
-          # EC2 - Control Plane (excluding potentially sensitive data-plane or overly broad permissions)
-          "ec2:CreateTags", "ec2:DeleteTags",
-          "ec2:RunInstances", "ec2:TerminateInstances", "ec2:StopInstances", "ec2:StartInstances", "ec2:RebootInstances",
+          "ec2:CreateTags", "ec2:DeleteTags", "ec2:RunInstances", "ec2:TerminateInstances", "ec2:StopInstances", "ec2:StartInstances", "ec2:RebootInstances",
           "ec2:CreateSecurityGroup", "ec2:DeleteSecurityGroup", "ec2:AuthorizeSecurityGroupIngress", "ec2:RevokeSecurityGroupIngress", "ec2:AuthorizeSecurityGroupEgress", "ec2:RevokeSecurityGroupEgress",
-          "ec2:CreateKeyPair", "ec2:DeleteKeyPair", "ec2:ImportKeyPair",
-          "ec2:CreateVolume", "ec2:DeleteVolume", "ec2:AttachVolume", "ec2:DetachVolume",
-          "ec2:CreateSnapshot", "ec2:DeleteSnapshot", "ec2:CopySnapshot",
-          "ec2:CreateImage", "ec2:DeregisterImage",
-          "ec2:AllocateAddress", "ec2:ReleaseAddress", "ec2:AssociateAddress", "ec2:DisassociateAddress",
-          "ec2:CreateSubnet", "ec2:DeleteSubnet", "ec2:ModifySubnetAttribute",
-          "ec2:CreateVpc", "ec2:DeleteVpc", "ec2:ModifyVpcAttribute", "ec2:AssociateVpcCidrBlock", "ec2:DisassociateVpcCidrBlock",
-          "ec2:CreateInternetGateway", "ec2:DeleteInternetGateway", "ec2:AttachInternetGateway", "ec2:DetachInternetGateway",
-          "ec2:CreateRouteTable", "ec2:DeleteRouteTable", "ec2:CreateRoute", "ec2:DeleteRoute", "ec2:ReplaceRoute", "ec2:AssociateRouteTable", "ec2:DisassociateRouteTable",
-          # ECR - Control Plane
+          "ec2:CreateKeyPair", "ec2:DeleteKeyPair", "ec2:ImportKeyPair", "ec2:CreateVolume", "ec2:DeleteVolume", "ec2:AttachVolume", "ec2:DetachVolume",
+          "ec2:CreateSnapshot", "ec2:DeleteSnapshot", "ec2:CopySnapshot", "ec2:CreateImage", "ec2:DeregisterImage", "ec2:AllocateAddress", "ec2:ReleaseAddress", "ec2:AssociateAddress", "ec2:DisassociateAddress",
+          "ec2:CreateSubnet", "ec2:DeleteSubnet", "ec2:ModifySubnetAttribute", "ec2:CreateVpc", "ec2:DeleteVpc", "ec2:ModifyVpcAttribute", "ec2:AssociateVpcCidrBlock", "ec2:DisassociateVpcCidrBlock",
+          "ec2:CreateInternetGateway", "ec2:DeleteInternetGateway", "ec2:AttachInternetGateway", "ec2:DetachInternetGateway", "ec2:CreateRouteTable", "ec2:DeleteRouteTable", "ec2:CreateRoute", "ec2:DeleteRoute", "ec2:ReplaceRoute", "ec2:AssociateRouteTable", "ec2:DisassociateRouteTable",
           "ecr:CreateRepository", "ecr:DeleteRepository", "ecr:SetRepositoryPolicy", "ecr:DeleteRepositoryPolicy", "ecr:PutImageScanningConfiguration", "ecr:PutImageTagMutability",
-          # ECS - Control Plane
           "ecs:CreateCluster", "ecs:DeleteCluster", "ecs:CreateService", "ecs:UpdateService", "ecs:DeleteService", "ecs:RegisterTaskDefinition", "ecs:DeregisterTaskDefinition", "ecs:RunTask", "ecs:StopTask",
-          # Cognito - Control Plane
-          "cognito-idp:CreateUserPool", "cognito-idp:UpdateUserPool", "cognito-idp:DeleteUserPool",
-          "cognito-idp:CreateUserPoolClient", "cognito-idp:UpdateUserPoolClient", "cognito-idp:DeleteUserPoolClient",
+          "cognito-idp:CreateUserPool", "cognito-idp:UpdateUserPool", "cognito-idp:DeleteUserPool", "cognito-idp:CreateUserPoolClient", "cognito-idp:UpdateUserPoolClient", "cognito-idp:DeleteUserPoolClient",
           "cognito-idp:CreateUserPoolDomain", "cognito-idp:DeleteUserPoolDomain", "cognito-idp:UpdateUserPoolDomain"
         ],
         Resource = "*"
@@ -80,16 +55,10 @@ resource "aws_iam_policy" "terraform_user_policy" {
         Sid    = "RDSManagement",
         Effect = "Allow",
         Action = [
-          # RDS Control Plane - Actions to manage DB instances, clusters, snapshots, parameter groups, subnet groups, etc.
-          # Explicitly avoid rds-data:* or actions that would grant direct SQL-level access via IAM.
-          "rds:CreateDBInstance", "rds:DeleteDBInstance", "rds:ModifyDBInstance",
-          "rds:RebootDBInstance", "rds:StartDBInstance", "rds:StopDBInstance",
-          "rds:CreateDBSnapshot", "rds:DeleteDBSnapshot", "rds:CopyDBSnapshot",
-          "rds:CreateDBSubnetGroup", "rds:DeleteDBSubnetGroup", "rds:ModifyDBSubnetGroup",
-          "rds:CreateDBParameterGroup", "rds:DeleteDBParameterGroup", "rds:ModifyDBParameterGroup",
-          "rds:CreateDBCluster", "rds:DeleteDBCluster", "rds:ModifyDBCluster",
-          "rds:CreateDBClusterSnapshot", "rds:DeleteDBClusterSnapshot",
-          "rds:AddTagsToResource", "rds:RemoveTagsFromResource"
+          "rds:CreateDBInstance", "rds:DeleteDBInstance", "rds:ModifyDBInstance", "rds:RebootDBInstance", "rds:StartDBInstance", "rds:StopDBInstance",
+          "rds:CreateDBSnapshot", "rds:DeleteDBSnapshot", "rds:CopyDBSnapshot", "rds:CreateDBSubnetGroup", "rds:DeleteDBSubnetGroup", "rds:ModifyDBSubnetGroup",
+          "rds:CreateDBParameterGroup", "rds:DeleteDBParameterGroup", "rds:ModifyDBParameterGroup", "rds:CreateDBCluster", "rds:DeleteDBCluster", "rds:ModifyDBCluster",
+          "rds:CreateDBClusterSnapshot", "rds:DeleteDBClusterSnapshot", "rds:AddTagsToResource", "rds:RemoveTagsFromResource"
         ],
         Resource = "*"
       },
@@ -97,31 +66,27 @@ resource "aws_iam_policy" "terraform_user_policy" {
         Sid    = "S3StateBucketAccess",
         Effect = "Allow",
         Action = [ "s3:GetObject", "s3:PutObject", "s3:DeleteObject" ],
-        Resource = "arn:aws:s3:::terraform-state-store-24680/*" # Hardcoded state bucket name
+        Resource = "arn:aws:s3:::${var.state_bucket_name_for_policy}/*"
       },
       {
         Sid    = "S3StateBucketListAccess",
         Effect = "Allow",
         Action = [ "s3:ListBucket", "s3:GetBucketVersioning" ],
-        Resource = "arn:aws:s3:::terraform-state-store-24680" # Hardcoded state bucket name
+        Resource = "arn:aws:s3:::${var.state_bucket_name_for_policy}"
       },
       {
         Sid    = "DynamoDBLockTableAccess",
         Effect = "Allow",
         Action = [ "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:DescribeTable" ],
-        Resource = "arn:aws:dynamodb:us-east-1:*:table/terraform-state-locks" # Hardcoded table name, assuming region and account
+        Resource = "arn:aws:dynamodb:us-east-1:*:table/${var.dynamodb_lock_table_name_for_policy}" # Assuming region and account
       },
       {
         Sid    = "IAMRoleManagement",
         Effect = "Allow",
         Action = [
-          "iam:PassRole",
-          "iam:GetUser", "iam:ListUsers",
-          "iam:GetRole", "iam:ListRoles", "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
-          "iam:GetPolicy", "iam:ListPolicies", "iam:CreatePolicy", "iam:DeletePolicy",
-          "iam:AttachRolePolicy", "iam:DetachRolePolicy", "iam:ListAttachedRolePolicies",
+          "iam:PassRole", "iam:GetUser", "iam:ListUsers", "iam:GetRole", "iam:ListRoles", "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
+          "iam:GetPolicy", "iam:ListPolicies", "iam:CreatePolicy", "iam:DeletePolicy", "iam:AttachRolePolicy", "iam:DetachRolePolicy", "iam:ListAttachedRolePolicies",
           "iam:PutRolePolicy", "iam:GetRolePolicy", "iam:DeleteRolePolicy", "iam:ListRolePolicies"
-          # Add iam:CreateUser, iam:DeleteUser etc. if this user should manage other IAM users
         ],
         Resource = "*"
       }
@@ -131,7 +96,7 @@ resource "aws_iam_policy" "terraform_user_policy" {
 
 resource "aws_iam_group_policy_attachment" "terraform_user_policy_attachment" {
   group      = aws_iam_group.terraform_user_group.name
-  policy_arn = aws_iam_policy.terraform_user_policy.arn
+  policy_arn = aws_iam_policy.terraform_user_group_policy.arn
 }
 
 # Outputs for the Terraform user and related resources

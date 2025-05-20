@@ -23,7 +23,7 @@ provider "aws" {
   default_tags {
     tags = {
       Environment = "foundation-iam"
-      Project     = "ops" // Can be var.app_name if defined in this sub-module's vars
+      Project     = var.app_name
       ManagedBy   = "terraform"
     }
   }
