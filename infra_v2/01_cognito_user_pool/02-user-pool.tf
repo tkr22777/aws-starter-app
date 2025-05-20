@@ -93,6 +93,7 @@ resource "aws_cognito_user_pool_domain" "main" {
   user_pool_id = aws_cognito_user_pool.app_user_pool.id
 }
 
+# Outputs for the Cognito User Pool and related resources
 output "user_pool_id" {
   description = "The ID of the Cognito User Pool"
   value       = aws_cognito_user_pool.app_user_pool.id
