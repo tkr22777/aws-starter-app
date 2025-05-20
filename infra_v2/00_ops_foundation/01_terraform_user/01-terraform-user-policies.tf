@@ -15,7 +15,6 @@ resource "aws_iam_group_membership" "example_membership" {
 resource "aws_iam_group" "terraform_user_group" {
   name = var.terraform_user_group_name
 }
-
 resource "aws_iam_policy" "terraform_user_group_policy" {
   name        = var.terraform_user_group_policy_name
   description = "Policy for terraform infrastructure management with least privilege in mind"
@@ -44,7 +43,7 @@ resource "aws_iam_policy" "terraform_user_group_policy" {
           "ec2:CreateSnapshot", "ec2:DeleteSnapshot", "ec2:CopySnapshot", "ec2:CreateImage", "ec2:DeregisterImage", "ec2:AllocateAddress", "ec2:ReleaseAddress", "ec2:AssociateAddress", "ec2:DisassociateAddress",
           "ec2:CreateSubnet", "ec2:DeleteSubnet", "ec2:ModifySubnetAttribute", "ec2:CreateVpc", "ec2:DeleteVpc", "ec2:ModifyVpcAttribute", "ec2:AssociateVpcCidrBlock", "ec2:DisassociateVpcCidrBlock",
           "ec2:CreateInternetGateway", "ec2:DeleteInternetGateway", "ec2:AttachInternetGateway", "ec2:DetachInternetGateway", "ec2:CreateRouteTable", "ec2:DeleteRouteTable", "ec2:CreateRoute", "ec2:DeleteRoute", "ec2:ReplaceRoute", "ec2:AssociateRouteTable", "ec2:DisassociateRouteTable",
-          "ecr:CreateRepository", "ecr:DeleteRepository", "ecr:SetRepositoryPolicy", "ecr:DeleteRepositoryPolicy", "ecr:PutImageScanningConfiguration", "ecr:PutImageTagMutability",
+          "ecr:CreateRepository", "ecr:DeleteRepository", "ecr:SetRepositoryPolicy", "ecr:DeleteRepositoryPolicy", "ecr:PutImageScanningConfiguration", "ecr:PutImageTagMutability", "ecr:TagResource", "ecr:UntagResource",
           "ecs:CreateCluster", "ecs:DeleteCluster", "ecs:CreateService", "ecs:UpdateService", "ecs:DeleteService", "ecs:RegisterTaskDefinition", "ecs:DeregisterTaskDefinition", "ecs:RunTask", "ecs:StopTask",
           "cognito-idp:CreateUserPool", "cognito-idp:UpdateUserPool", "cognito-idp:DeleteUserPool",
           "cognito-idp:CreateUserPoolClient", "cognito-idp:UpdateUserPoolClient", "cognito-idp:DeleteUserPoolClient",
