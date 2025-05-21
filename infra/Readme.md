@@ -8,7 +8,8 @@ This repository contains Terraform configurations for AWS infrastructure organiz
 4. Database (RDS)
 5. Compute (EC2)
 6. Connectivity (EC2-RDS)
-7. Messaging (SQS)
+7. Serverless Compute (Lambda)
+8. Messaging (SQS)
 
 ## Infrastructure Components
 
@@ -41,7 +42,13 @@ This repository contains Terraform configurations for AWS infrastructure organiz
 - Security group rules for EC2 to RDS connectivity
 - Cross-module resource discovery
 
-### 7. Messaging (`06_SQS/`)
+### 7. Serverless Compute (`07_lambda/`)
+- Lambda functions for serverless processing
+- IAM roles and policies
+- Event source mappings for event-driven execution
+- CloudWatch logging configuration
+
+### 8. Messaging (`06_SQS/`)
 - Standard SQS queues
 - Optional dead-letter queues
 - Queue access policies
@@ -110,9 +117,16 @@ This repository contains Terraform configurations for AWS infrastructure organiz
    terraform apply
    ```
 
-   f. Messaging (optional):
+   f. Messaging:
    ```
    cd infra/06_SQS
+   terraform init
+   terraform apply
+   ```
+
+   g. Lambda:
+   ```
+   cd infra/07_lambda
    terraform init
    terraform apply
    ```
@@ -152,4 +166,13 @@ aws ec2 describe-images \
   --filters "Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*" \
   --query "Images[*].[ImageId,Name,CreationDate]" \
   --output table
+```
+
+### SQS & Lambda
+```bash
+# Send a test message to SQS
+aws sqs send-message --queue-url <queue_url> --message-body '{"test":"Hello, World!"}' --profile terraform_user
+
+# View Lambda logs
+aws logs filter-log-events --log-group-name /aws/lambda/<function_name> --profile terraform_user
 ```
