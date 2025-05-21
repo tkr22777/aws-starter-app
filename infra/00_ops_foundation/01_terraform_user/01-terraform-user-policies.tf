@@ -117,9 +117,15 @@ resource "aws_iam_policy" "terraform_user_group_policy" {
         Action = [
           "iam:PassRole", 
           "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
-          "iam:CreatePolicy", "iam:DeletePolicy",
+          "iam:CreatePolicy", "iam:DeletePolicy", "iam:TagPolicy", "iam:GetPolicy", "iam:GetPolicyVersion",
+          "iam:ListPolicyVersions", "iam:CreatePolicyVersion", "iam:DeletePolicyVersion", "iam:SetDefaultPolicyVersion",
           "iam:AttachRolePolicy", "iam:DetachRolePolicy", 
-          "iam:PutRolePolicy", "iam:DeleteRolePolicy"
+          "iam:PutRolePolicy", "iam:DeleteRolePolicy",
+          "iam:CreateUser", "iam:DeleteUser", "iam:GetUser", "iam:ListUsers", "iam:TagUser", "iam:UntagUser", "iam:UpdateUser",
+          "iam:ListGroupsForUser", "iam:AddUserToGroup", "iam:RemoveUserFromGroup", 
+          "iam:CreateAccessKey", "iam:DeleteAccessKey", "iam:UpdateAccessKey", "iam:ListAccessKeys", "iam:GetAccessKeyLastUsed",
+          "iam:AttachUserPolicy", "iam:DetachUserPolicy", "iam:ListAttachedUserPolicies", 
+          "iam:PutUserPolicy", "iam:DeleteUserPolicy", "iam:GetUserPolicy", "iam:ListUserPolicies"
         ],
         Resource = "*"
       }
