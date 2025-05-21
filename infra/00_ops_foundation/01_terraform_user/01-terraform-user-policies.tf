@@ -41,7 +41,8 @@ resource "aws_iam_policy" "terraform_user_group_policy" {
           "iam:ListAccountAliases", "iam:GetAccountSummary",
           "iam:GetUser", "iam:ListUsers", "iam:GetRole", "iam:ListRoles", "iam:GetPolicy", "iam:ListPolicies", "iam:ListAttachedRolePolicies", "iam:GetRolePolicy", "iam:ListRolePolicies",
           "sts:GetCallerIdentity", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricData",
-          "cloudwatch:GetMetricStatistics", "cloudwatch:ListMetrics"
+          "cloudwatch:GetMetricStatistics", "cloudwatch:ListMetrics",
+          "dynamodb:DescribeTable", "dynamodb:List*", "dynamodb:DescribeTimeToLive", "dynamodb:DescribeContinuousBackups"
         ],
         Resource = "*"
       },
@@ -72,6 +73,23 @@ resource "aws_iam_policy" "terraform_user_group_policy" {
           "rds:CreateDBSnapshot", "rds:DeleteDBSnapshot", "rds:CopyDBSnapshot", "rds:CreateDBSubnetGroup", "rds:DeleteDBSubnetGroup", "rds:ModifyDBSubnetGroup",
           "rds:CreateDBParameterGroup", "rds:DeleteDBParameterGroup", "rds:ModifyDBParameterGroup", "rds:CreateDBCluster", "rds:DeleteDBCluster", "rds:ModifyDBCluster",
           "rds:CreateDBClusterSnapshot", "rds:DeleteDBClusterSnapshot", "rds:AddTagsToResource", "rds:RemoveTagsFromResource", "rds:ListTagsForResource"
+        ],
+        Resource = "*"
+      },
+      {
+        Sid    = "DynamoDBManagement",
+        Effect = "Allow",
+        Action = [
+          "dynamodb:CreateTable", "dynamodb:DeleteTable", "dynamodb:UpdateTable",
+          "dynamodb:UpdateTimeToLive", "dynamodb:CreateBackup", "dynamodb:DeleteBackup",
+          "dynamodb:RestoreTableFromBackup", "dynamodb:TagResource", "dynamodb:UntagResource",
+          "dynamodb:UpdateContinuousBackups", "dynamodb:CreateGlobalTable",
+          "dynamodb:UpdateGlobalTable", "dynamodb:DescribeGlobalTable",
+          "dynamodb:CreateTableReplica", "dynamodb:UpdateTableReplica",
+          "dynamodb:EnableKinesisStreamingDestination", "dynamodb:DisableKinesisStreamingDestination",
+          "dynamodb:UpdateItem", "dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:DeleteItem",
+          "dynamodb:BatchWriteItem", "dynamodb:BatchGetItem", "dynamodb:Query", "dynamodb:Scan",
+          "dynamodb:ConditionCheckItem"
         ],
         Resource = "*"
       },
