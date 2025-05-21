@@ -13,13 +13,17 @@ resource "aws_vpc" "app_vpc" {
   enable_network_address_usage_metrics = true
 
   tags = {
-    name = "${var.app_name}-vpc"
+    Name = "${var.app_name}-vpc"
   }
 }
 
 # gateway enables connectivity to internet from the VPC
 resource "aws_internet_gateway" "app_vpc_gw" {
   vpc_id = aws_vpc.app_vpc.id
+  
+  tags = {
+    Name = "${var.app_name}-igw"
+  }
 }
 
 # routing table associated with the Internet Gateway for the 'app_env' VPC
@@ -45,6 +49,10 @@ resource "aws_route_table" "app_vpc_rt" {
   route {
     ipv6_cidr_block = "::/0"
     gateway_id      = aws_internet_gateway.app_vpc_gw.id
+  }
+  
+  tags = {
+    Name = "${var.app_name}-route-table"
   }
 }
 

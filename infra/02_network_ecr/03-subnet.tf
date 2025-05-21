@@ -11,7 +11,7 @@ resource "aws_subnet" "app_vpc_sn" {
   assign_ipv6_address_on_creation = true
 
   tags = {
-    name = "${var.app_name}-vpc-subnet"
+    Name = "${var.app_name}-vpc-subnet"
   }
 }
 

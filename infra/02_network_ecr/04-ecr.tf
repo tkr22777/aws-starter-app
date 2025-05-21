@@ -5,6 +5,10 @@ resource "aws_ecr_repository" "app_ecr" {
   image_scanning_configuration {
     scan_on_push = true
   }
+  
+  tags = {
+    Name = "${var.app_name}-ecr"
+  }
 }
 
 # Outputs for the ECR repository
