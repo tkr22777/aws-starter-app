@@ -1,5 +1,9 @@
 resource "aws_iam_user" "terraform_user" {
   name = var.terraform_user_name
+  
+  tags = {
+    Name = var.terraform_user_name
+  }
 }
 
 resource "aws_iam_group_membership" "example_membership" {
@@ -15,9 +19,15 @@ resource "aws_iam_group_membership" "example_membership" {
 resource "aws_iam_group" "terraform_user_group" {
   name = var.terraform_user_group_name
 }
+
 resource "aws_iam_policy" "terraform_user_group_policy" {
   name        = var.terraform_user_group_policy_name
   description = "Policy for terraform infrastructure management with least privilege in mind"
+  
+  tags = {
+    Name = var.terraform_user_group_policy_name
+  }
+  
   policy      = jsonencode({
     Version = "2012-10-17"
     Statement = [

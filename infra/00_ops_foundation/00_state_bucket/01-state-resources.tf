@@ -4,6 +4,10 @@ resource "aws_s3_bucket" "terraform_state" {
   lifecycle {
     prevent_destroy = true
   }
+  
+  tags = {
+    Name = var.state_bucket_name
+  }
 }
 
 # block public access to state files, they contain sensitive infrastructure secrets and credentials.
@@ -45,6 +49,10 @@ resource "aws_dynamodb_table" "terraform_locks" {
   
   lifecycle {
     prevent_destroy = true
+  }
+  
+  tags = {
+    Name = var.dynamodb_lock_table_name
   }
 }
 
