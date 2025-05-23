@@ -88,6 +88,7 @@ resource "aws_iam_policy" "compute_services_policy" {
         Action = [
           "ec2:CreateTags", "ec2:DeleteTags", "ec2:RunInstances", "ec2:TerminateInstances", "ec2:StopInstances", "ec2:StartInstances", "ec2:RebootInstances",
           "ec2:CreateSecurityGroup", "ec2:DeleteSecurityGroup", "ec2:AuthorizeSecurityGroupIngress", "ec2:RevokeSecurityGroupIngress", "ec2:AuthorizeSecurityGroupEgress", "ec2:RevokeSecurityGroupEgress",
+          "ec2:GetSecurityGroupsForVpc",
           "ec2:CreateKeyPair", "ec2:DeleteKeyPair", "ec2:ImportKeyPair", "ec2:CreateVolume", "ec2:DeleteVolume", "ec2:AttachVolume", "ec2:DetachVolume",
           "ec2:CreateSnapshot", "ec2:DeleteSnapshot", "ec2:CopySnapshot", "ec2:CreateImage", "ec2:DeregisterImage", "ec2:AllocateAddress", "ec2:ReleaseAddress", "ec2:AssociateAddress", "ec2:DisassociateAddress",
           "ec2:CreateSubnet", "ec2:DeleteSubnet", "ec2:ModifySubnetAttribute", "ec2:CreateVpc", "ec2:DeleteVpc", "ec2:ModifyVpcAttribute", "ec2:AssociateVpcCidrBlock", "ec2:DisassociateVpcCidrBlock",
@@ -186,6 +187,55 @@ resource "aws_iam_policy" "dynamodb_management_policy" {
   })
 }
 
+# Application Load Balancer management policy
+resource "aws_iam_policy" "alb_management_policy" {
+  name        = "terraform_user_alb_management_policy"
+  description = "Policy for Application Load Balancer management"
+  
+  tags = {
+    Name = "terraform_user_alb_management_policy"
+  }
+  
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "ALBManagement",
+        Effect = "Allow",
+        Action = [
+          "elasticloadbalancing:CreateLoadBalancer",
+          "elasticloadbalancing:DeleteLoadBalancer",
+          "elasticloadbalancing:ModifyLoadBalancerAttributes",
+          "elasticloadbalancing:DescribeLoadBalancerAttributes",
+          "elasticloadbalancing:SetSecurityGroups",
+          "elasticloadbalancing:CreateTargetGroup",
+          "elasticloadbalancing:DeleteTargetGroup",
+          "elasticloadbalancing:ModifyTargetGroup",
+          "elasticloadbalancing:ModifyTargetGroupAttributes",
+          "elasticloadbalancing:DescribeTargetGroupAttributes",
+          "elasticloadbalancing:CreateListener",
+          "elasticloadbalancing:DeleteListener",
+          "elasticloadbalancing:ModifyListener",
+          "elasticloadbalancing:CreateRule",
+          "elasticloadbalancing:DeleteRule",
+          "elasticloadbalancing:ModifyRule",
+          "elasticloadbalancing:RegisterTargets",
+          "elasticloadbalancing:DeregisterTargets",
+          "elasticloadbalancing:DescribeLoadBalancers",
+          "elasticloadbalancing:DescribeTargetGroups",
+          "elasticloadbalancing:DescribeTargetHealth",
+          "elasticloadbalancing:DescribeListeners",
+          "elasticloadbalancing:DescribeRules",
+          "elasticloadbalancing:AddTags",
+          "elasticloadbalancing:RemoveTags",
+          "elasticloadbalancing:DescribeTags"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 # IAM management policy
 resource "aws_iam_policy" "iam_management_policy" {
   name        = "terraform_user_iam_management_policy"
@@ -204,6 +254,7 @@ resource "aws_iam_policy" "iam_management_policy" {
         Action = [
           "iam:PassRole", 
           "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
+          "iam:CreateServiceLinkedRole",
           "iam:CreatePolicy", "iam:DeletePolicy", "iam:TagPolicy", "iam:GetPolicy", "iam:GetPolicyVersion",
           "iam:ListPolicyVersions", "iam:CreatePolicyVersion", "iam:DeletePolicyVersion", "iam:SetDefaultPolicyVersion",
           "iam:AttachRolePolicy", "iam:DetachRolePolicy", 
@@ -387,6 +438,11 @@ resource "aws_iam_group_policy_attachment" "dynamodb_management_policy_attachmen
 resource "aws_iam_group_policy_attachment" "iam_management_policy_attachment" {
   group      = aws_iam_group.terraform_user_group.name
   policy_arn = aws_iam_policy.iam_management_policy.arn
+}
+
+resource "aws_iam_group_policy_attachment" "alb_management_policy_attachment" {
+  group      = aws_iam_group.terraform_user_group.name
+  policy_arn = aws_iam_policy.alb_management_policy.arn
 }
 
 # Outputs for the Terraform user and related resources
