@@ -4,7 +4,7 @@ resource "aws_vpc" "app_vpc" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = true
   enable_dns_support   = true
-  
+
   # Enable IPv6 support (optional but recommended for future-proofing)
   assign_generated_ipv6_cidr_block = true
 
@@ -20,7 +20,7 @@ resource "aws_vpc" "app_vpc" {
 # gateway enables connectivity to internet from the VPC
 resource "aws_internet_gateway" "app_vpc_gw" {
   vpc_id = aws_vpc.app_vpc.id
-  
+
   tags = {
     Name = "${var.app_name}-igw"
   }
@@ -38,19 +38,19 @@ resource "aws_internet_gateway" "app_vpc_gw" {
 #   - However, the route for `192.168.1.0/24` is selected because `/24` is more specific than `/16`.
 resource "aws_route_table" "app_vpc_rt" {
   vpc_id = aws_vpc.app_vpc.id
-  
+
   # IPv4 route
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.app_vpc_gw.id
   }
-  
+
   # IPv6 route
   route {
     ipv6_cidr_block = "::/0"
     gateway_id      = aws_internet_gateway.app_vpc_gw.id
   }
-  
+
   tags = {
     Name = "${var.app_name}-route-table"
   }

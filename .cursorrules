@@ -31,6 +31,29 @@
 - `03-*.tf`: Resource definitions (numbered by type)
 - `04-outputs.tf`: Output values and CLI examples
 
+### Variable Organization
+- **Group Similar Variables**: Organize variables by logical sections with clear headers
+- **Section Headers**: Use commented section dividers for readability
+- **Logical Grouping**: Group by: Application config, VPC config, Subnet config, Database config, etc.
+- **Example Structure**:
+```hcl
+# =============================================================================
+# Application Configuration
+# =============================================================================
+variable "app_name" { ... }
+
+# =============================================================================
+# VPC Configuration  
+# =============================================================================
+variable "vpc_cidr_block" { ... }
+
+# =============================================================================
+# Subnet Configuration
+# =============================================================================
+variable "subnet_cidr_block" { ... }
+variable "availability_zone" { ... }
+```
+
 ### Naming Conventions
 ```hcl
 # Resources: service-purpose-modifier

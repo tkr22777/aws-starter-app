@@ -6,16 +6,17 @@ Core networking infrastructure with VPC, subnets, and ECR repository.
 
 **Changing subnet CIDR or AZ will break the ALB module!**
 
-Subnets have `prevent_destroy = true` to avoid accidental breakage. To change subnets:
+To change subnets:
 
 1. **Plan carefully**: Subnet changes recreate ALB (5+ min downtime)
 2. **Coordinate modules**: Apply network first, then ALB
-3. **Override protection**: Use `-replace` if intentional
+3. **Test thoroughly**: Verify subnet connectivity after changes
 
 ```bash
-# Example: Intentional subnet change
+# Example: Changing subnet configuration
 cd infra/02_network
-terraform apply -replace="aws_subnet.app_vpc_sn" -replace="aws_subnet.subnet_ha_2"
+terraform plan  # Review changes first
+terraform apply
 
 # REQUIRED: Update ALB after subnet changes
 cd ../02a_alb  
@@ -32,16 +33,8 @@ terraform apply
 
 ## Architecture
 
-- **Main Subnet**: Configurable via variables (default: `10.0.1.0/24` in `us-east-1a`)
-- **HA Subnet**: Auto-calculated from main subnet (e.g., `10.0.3.0/24` in `us-east-1b`)
-
-## Auto-Calculation Logic
-
-The HA subnet automatically derives from the main subnet configuration:
-- **CIDR**: Adds +2 to the third octet (e.g., 10.0.1.0/24 → 10.0.3.0/24)
-- **AZ**: Switches between 'a' and 'b' in same region (e.g., us-east-1a → us-east-1b)
-
-This ensures consistency when customizing subnet configuration.
+- **Main Subnet**: Configurable via `subnet_cidr_block` and `availability_zone`
+- **HA Subnet**: Configurable via `subnet_ha_2_cidr_block` and `subnet_ha_2_availability_zone`
 
 ## Dependencies
 
@@ -51,11 +44,13 @@ Deploy **before** ALB module - ALB references subnets by tags.
 
 ```hcl
 # terraform.tfvars
-app_name           = "the-awesome-app"
-environment        = "development"
-vpc_cidr_block     = "10.0.0.0/16"
-subnet_cidr_block  = "10.0.1.0/24"
-availability_zone  = "us-east-1a"
+app_name                       = "the-awesome-app"
+environment                    = "development"
+vpc_cidr_block                 = "10.0.0.0/16"
+subnet_cidr_block              = "10.0.1.0/24"
+availability_zone              = "us-east-1a"
+subnet_ha_2_cidr_block         = "10.0.3.0/24"
+subnet_ha_2_availability_zone  = "us-east-1b"
 ```
 
 ## Commands
@@ -81,6 +76,7 @@ Provides foundational networking for all other modules.
 ## Network Resources Created
 - VPC (CIDR: 10.0.0.0/16) with IPv4 and IPv6 support
 - Public Subnet (CIDR: 10.0.1.0/24) in us-east-1a
+- HA Subnet (CIDR: 10.0.3.0/24) in us-east-1b
 - Internet Gateway
 - Route Table with public routes
 

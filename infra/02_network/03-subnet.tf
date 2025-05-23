@@ -5,12 +5,12 @@ resource "aws_subnet" "app_vpc_sn" {
   vpc_id            = aws_vpc.app_vpc.id
   cidr_block        = var.subnet_cidr_block
   availability_zone = var.availability_zone
-  
+
   # auto-assign public IP addresses for instances launched in this subnet
   map_public_ip_on_launch = true
 
   # IPv6 configuration
-  ipv6_cidr_block = cidrsubnet(aws_vpc.app_vpc.ipv6_cidr_block, 8, 1)
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.app_vpc.ipv6_cidr_block, 8, 1)
   assign_ipv6_address_on_creation = true
 
   tags = {
@@ -18,14 +18,12 @@ resource "aws_subnet" "app_vpc_sn" {
   }
 }
 
-# Second subnet for high availability (HA) - automatically derived from main subnet config
+# Second subnet for high availability (HA) - explicit configuration
 resource "aws_subnet" "subnet_ha_2" {
   vpc_id            = aws_vpc.app_vpc.id
-  # Auto-calculate CIDR: if main is 10.0.1.0/24, this becomes 10.0.3.0/24 (adds 2 to third octet)
-  cidr_block        = cidrsubnet(var.vpc_cidr_block, 8, tonumber(split(".", split("/", var.subnet_cidr_block)[0])[2]) + 2)
-  # Auto-calculate AZ: if main is us-east-1a, this becomes us-east-1b
-  availability_zone = "${substr(var.availability_zone, 0, length(var.availability_zone)-1)}${var.availability_zone == "${substr(var.availability_zone, 0, length(var.availability_zone)-1)}a" ? "b" : "a"}"
-  
+  cidr_block        = var.subnet_ha_2_cidr_block
+  availability_zone = var.subnet_ha_2_availability_zone
+
   map_public_ip_on_launch = true
 
   tags = {
@@ -73,11 +71,11 @@ output "subnet_ha_2_id" {
 }
 
 output "subnet_ha_2_cidr" {
-  description = "The CIDR block of the HA subnet (auto-calculated)"
+  description = "The CIDR block of the HA subnet"
   value       = aws_subnet.subnet_ha_2.cidr_block
 }
 
 output "subnet_ha_2_availability_zone" {
-  description = "The availability zone of the HA subnet (auto-calculated)"
+  description = "The availability zone of the HA subnet"
   value       = aws_subnet.subnet_ha_2.availability_zone
 }
