@@ -1,90 +1,91 @@
 # DynamoDB Single-Table Module
 
-This module provisions a DynamoDB table configured for a single-table design pattern.
+NoSQL database using single-table design pattern for optimal performance and cost efficiency.
 
-## Single-Table Design
+## Configuration
 
-This table follows the single-table design pattern for NoSQL databases, where multiple entity types are stored in the same table using a carefully designed primary key structure. This approach improves performance and reduces costs by minimizing the number of tables needed.
+```hcl
+# terraform.tfvars
+table_name = "my-app-main-table"
+billing_mode = "PAY_PER_REQUEST"    # or "PROVISIONED" 
+enable_point_in_time_recovery = true
+enable_encryption = true
+```
 
 ## Key Structure
 
-The table uses:
-- Partition Key (PK): String identifier containing entity type prefix (e.g., `USER#123`, `ORDER#456`)
-- Sort Key (SK): String identifier for the item type and relationships (e.g., `PROFILE`, `ORDER#789`, `METADATA`)
-
-## Resources Created
-
-- **DynamoDB Table**: Single table with composite primary key (PK + SK)
-- **Global Secondary Index**: Inverted index for SK → PK lookups
-- **Time-to-Live (TTL)**: Configuration for automatic item expiration
-- **Point-in-Time Recovery**: Continuous backups (enabled by default)
-- **Server-Side Encryption**: AWS-managed encryption by default
+- **Partition Key (PK)**: Entity type + ID (e.g., `USER#123`, `ORDER#456`)
+- **Sort Key (SK)**: Item type or relationship (e.g., `PROFILE`, `ORDER#789`)
+- **GSI1**: Inverted index for reverse lookups (SK → PK)
 
 ## Usage
 
-```hcl
-module "dynamodb" {
-  source = "../08_commons/mono-ddb-table"
-  
-  app_name  = "your-app-name"
-  table_name = "mono-table"
-  
-  # Optional configuration
-  billing_mode = "PAY_PER_REQUEST"  # or "PROVISIONED"
-  hash_key = "PK"
-  range_key = "SK"
-  
-  # If using PROVISIONED billing mode
-  read_capacity = 5
-  write_capacity = 5
-  
-  # Recovery and encryption
-  enable_point_in_time_recovery = true
-  enable_encryption = true
-}
+### Put/Get Items
+```bash
+# Put user profile
+aws dynamodb put-item --table-name my-app-main-table --item '{"PK":{"S":"USER#123"},"SK":{"S":"PROFILE"},"name":{"S":"John"},"email":{"S":"john@example.com"}}' --profile dynamodb-svc
+
+# Get user profile
+aws dynamodb get-item --table-name my-app-main-table --key '{"PK":{"S":"USER#123"},"SK":{"S":"PROFILE"}}' --profile dynamodb-svc
+
+# Query all user items
+aws dynamodb query --table-name my-app-main-table --key-condition-expression 'PK = :pk' --expression-attribute-values '{":pk":{"S":"USER#123"}}' --profile dynamodb-svc
 ```
 
-## Access Patterns
+### Application Integration
+```python
+import boto3
 
-The single-table design supports these common access patterns:
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('my-app-main-table')
 
-| Access Pattern | Key Condition | Index |
-|----------------|---------------|-------|
-| Get item by ID | PK = "ENTITY#id" AND SK = "METADATA" | Primary |
-| Get all items of specific type | PK begins_with "TYPE#" | Primary |
-| Find relationships | PK = "ENTITY#id" AND SK begins_with "REL#" | Primary |
-| Reverse lookup | SK = "TYPE" AND PK begins_with "ENTITY#" | GSI1 |
+# Put item
+table.put_item(Item={
+    'PK': 'USER#123',
+    'SK': 'PROFILE',
+    'name': 'John Doe',
+    'email': 'john@example.com'
+})
 
-## Item Structure Examples
+# Get item
+response = table.get_item(Key={'PK': 'USER#123', 'SK': 'PROFILE'})
+user = response.get('Item')
+
+# Query pattern
+response = table.query(KeyConditionExpression=Key('PK').eq('USER#123'))
+user_items = response['Items']
+```
+
+## Data Patterns
 
 ### User Profile
 ```json
 {
   "PK": "USER#123",
-  "SK": "PROFILE",
+  "SK": "PROFILE", 
   "name": "John Doe",
-  "email": "john@example.com",
-  "created_at": "2023-01-01T12:00:00Z"
+  "email": "john@example.com"
 }
 ```
 
-### Order
+### Order + User Relationship
 ```json
 {
   "PK": "ORDER#456",
   "SK": "METADATA",
   "user_id": "USER#123",
-  "order_date": "2023-02-15T09:30:00Z",
-  "total": 99.99,
-  "status": "SHIPPED"
+  "total": 99.99
+},
+{
+  "PK": "USER#123", 
+  "SK": "ORDER#456",
+  "order_date": "2023-02-15"
 }
 ```
 
-### User-Order Relationship
-```json
-{
-  "PK": "USER#123",
-  "SK": "ORDER#456",
-  "order_date": "2023-02-15T09:30:00Z"
-}
-``` 
+## Cost Optimization
+
+- **On-Demand**: Pay per request (good for unpredictable traffic)
+- **Provisioned**: Fixed capacity (20-40% cheaper for steady traffic)  
+- **Auto-scaling**: Adjust capacity based on usage
+- **TTL**: Automatic item expiration to reduce storage costs 
