@@ -10,10 +10,10 @@ variable "api_path_prefix" {
   default     = "/*"
 }
 
-variable "container_image" {
+variable "container_tag" {
   type        = string
-  description = "Docker image for the ECS service"
-  default     = "nginx:latest"
+  description = "Docker image tag for the ECS service (e.g., latest, v1.0.0)"
+  default     = "latest"
 }
 
 variable "container_port" {

@@ -9,7 +9,7 @@ terraform {
   }
   
   backend "s3" {
-    bucket         = "terraform-state-bucket-the-awesome-app"
+    bucket         = "terraform-state-store-24680"
     key            = "10_ecs/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-locks"

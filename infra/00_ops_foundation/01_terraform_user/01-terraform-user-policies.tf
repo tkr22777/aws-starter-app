@@ -100,7 +100,9 @@ resource "aws_iam_policy" "compute_services_policy" {
         Sid    = "ECRManagement",
         Effect = "Allow",
         Action = [
-          "ecr:CreateRepository", "ecr:DeleteRepository", "ecr:SetRepositoryPolicy", "ecr:DeleteRepositoryPolicy", "ecr:PutImageScanningConfiguration", "ecr:PutImageTagMutability", "ecr:TagResource", "ecr:UntagResource"
+          "ecr:CreateRepository", "ecr:DeleteRepository", "ecr:SetRepositoryPolicy", "ecr:DeleteRepositoryPolicy", "ecr:PutImageScanningConfiguration", "ecr:PutImageTagMutability", "ecr:TagResource", "ecr:UntagResource",
+          "ecr:GetAuthorizationToken", "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage",
+          "ecr:InitiateLayerUpload", "ecr:UploadLayerPart", "ecr:CompleteLayerUpload", "ecr:PutImage"
         ],
         Resource = "*"
       },
@@ -108,7 +110,11 @@ resource "aws_iam_policy" "compute_services_policy" {
         Sid    = "ECSManagement",
         Effect = "Allow",
         Action = [
-          "ecs:CreateCluster", "ecs:DeleteCluster", "ecs:CreateService", "ecs:UpdateService", "ecs:DeleteService", "ecs:RegisterTaskDefinition", "ecs:DeregisterTaskDefinition", "ecs:RunTask", "ecs:StopTask"
+          "ecs:CreateCluster", "ecs:DeleteCluster", "ecs:CreateService", "ecs:UpdateService", "ecs:DeleteService", "ecs:RegisterTaskDefinition", "ecs:DeregisterTaskDefinition", "ecs:RunTask", "ecs:StopTask",
+          "ecs:TagResource", "ecs:UntagResource", "ecs:ListTagsForResource",
+          "application-autoscaling:RegisterScalableTarget", "application-autoscaling:DeregisterScalableTarget", "application-autoscaling:DescribeScalableTargets",
+          "application-autoscaling:PutScalingPolicy", "application-autoscaling:DeleteScalingPolicy", "application-autoscaling:DescribeScalingPolicies",
+          "application-autoscaling:TagResource", "application-autoscaling:UntagResource", "application-autoscaling:ListTagsForResource"
         ],
         Resource = "*"
       },
@@ -353,7 +359,7 @@ resource "aws_iam_policy" "cloudtrail_policy" {
           "logs:CreateLogStream", "logs:DeleteLogStream", "logs:DescribeLogStreams",
           "logs:PutLogEvents", "logs:FilterLogEvents", "logs:GetLogEvents",
           "logs:PutRetentionPolicy", "logs:DeleteRetentionPolicy",
-          "logs:TagLogGroup", "logs:UntagLogGroup", "logs:ListTagsLogGroup",
+          "logs:TagLogGroup", "logs:UntagLogGroup", "logs:ListTagsLogGroup", "logs:ListTagsForResource",
           "logs:PutMetricFilter", "logs:DeleteMetricFilter", "logs:DescribeMetricFilters",
           "logs:PutSubscriptionFilter", "logs:DeleteSubscriptionFilter", "logs:DescribeSubscriptionFilters",
           "logs:PutQueryDefinition", "logs:DeleteQueryDefinition", "logs:DescribeQueryDefinitions",
