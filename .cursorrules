@@ -140,6 +140,7 @@ tags = {
 - **Small Changes**: Deploy incremental updates
 - **State Management**: Never edit state files manually
 - **Destructive Operations**: **NEVER** perform destructive operations (terraform force-unlock, terraform destroy, rm -rf, etc.) without explicit user consent. Always ask for permission first.
+- **Long-Running Operations**: **NEVER** run terraform apply for resources that typically take >2 minutes (ALB, RDS, EC2, NAT Gateway, etc.) without explicit user consent. Instead, provide the command for the user to run manually.
 - **Backup Strategy**: S3 versioning for state files
 - **Rollback Plan**: Keep previous working configurations
 

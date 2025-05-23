@@ -1,26 +1,21 @@
-# An additional subnet for RDS in a different availability zone
-# This is required for creating a DB subnet group
-resource "aws_subnet" "rds_subnet" {
-  vpc_id = data.aws_vpc.app_vpc.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "us-east-1b"
-
+# Data source to get the second HA subnet from network module
+data "aws_subnet" "subnet_ha_2" {
   tags = {
-    Name = "${var.app_name}-rds-subnet"
+    Name = "${var.app_name}-subnet-2-ha"
   }
 }
 
 # DB subnet group for RDS instances
 # This group is essential for RDS instances to ensure they are placed within the specified subnets
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "${var.app_name}-rds-subnet-group-new"
+  name       = "${var.app_name}-rds-subnet-group-shared"
   subnet_ids = [
     data.aws_subnet.app_subnet.id,
-    aws_subnet.rds_subnet.id
+    data.aws_subnet.subnet_ha_2.id
   ]
   
   tags = {
-    Name = "${var.app_name}-rds-subnet-group-new"
+    Name = "${var.app_name}-rds-subnet-group-shared"
   }
 }
 
@@ -70,9 +65,4 @@ output "db_instance_id" {
 output "db_subnet_group_name" {
   description = "The name of the database subnet group"
   value       = aws_db_subnet_group.rds_subnet_group.name
-}
-
-output "rds_subnet_id" {
-  description = "The ID of the additional RDS subnet"
-  value       = aws_subnet.rds_subnet.id
 } 

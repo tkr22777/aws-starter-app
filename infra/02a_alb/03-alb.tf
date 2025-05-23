@@ -1,7 +1,7 @@
 # Security group for Application Load Balancer
 resource "aws_security_group" "alb_sg" {
   name_prefix = "${var.app_name}-alb-"
-  vpc_id      = aws_vpc.app_vpc.id
+  vpc_id      = data.aws_vpc.app_vpc.id
   description = "Security group for Application Load Balancer"
 
   # Allow HTTP traffic from anywhere
@@ -42,7 +42,7 @@ resource "aws_lb" "app_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.app_vpc_sn.id, aws_subnet.alb_subnet_2.id]
+  subnets            = [data.aws_subnet.main_subnet.id, data.aws_subnet.subnet_ha_2.id]
 
   enable_deletion_protection = false
 
@@ -56,7 +56,7 @@ resource "aws_lb_target_group" "default_tg" {
   name        = "${var.app_name}-default-tg"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = aws_vpc.app_vpc.id
+  vpc_id      = data.aws_vpc.app_vpc.id
   target_type = "ip"
 
   health_check {
