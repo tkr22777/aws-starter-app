@@ -178,6 +178,17 @@ tags = {
 6. Merge to main branch
 7. Apply to production
 
+### Commit Message Standards
+- **Keep It Concise**: Use single line summaries (50-72 characters)
+- **Clear Intent**: Focus on what changed, not how or why in detail
+- **Action Format**: Use imperative mood (e.g., "add", "fix", "refactor")
+- **Scope Prefix**: Include module/component scope when relevant
+- **Examples**:
+  - `feat(network): add explicit subnet variables`
+  - `fix(alb): correct security group references`
+  - `refactor(variables): group by logical sections`
+  - `docs: update deployment instructions`
+
 ### Adding New Modules
 1. Create numbered directory (e.g., `10_new_module/`)
 2. Follow standard file structure
