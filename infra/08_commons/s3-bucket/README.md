@@ -1,6 +1,67 @@
 # S3 Bucket Module
 
-This module provisions an S3 bucket with configurable features including versioning, encryption, lifecycle rules, and public access controls.
+S3 bucket with versioning, encryption, lifecycle management, and access controls.
+
+## Configuration
+
+```hcl
+# terraform.tfvars
+bucket_name = "my-app-assets"
+enable_versioning = true      # Keep object versions
+enable_encryption = true      # AES-256 encryption
+block_public_access = true    # Prevent public access
+enable_logging = false        # Access request logging
+```
+
+## Usage
+
+### Upload Files
+```bash
+# Using service user credentials
+aws s3 cp file.txt s3://my-app-assets/ --profile s3-svc
+aws s3 sync ./local-folder s3://my-app-assets/folder/ --profile s3-svc
+```
+
+### Application Integration
+```python
+# Python boto3
+import boto3
+
+s3 = boto3.client('s3')
+
+# Upload file
+s3.upload_file('local_file.txt', 'my-app-assets', 'uploads/file.txt')
+
+# Download file
+s3.download_file('my-app-assets', 'uploads/file.txt', 'downloaded_file.txt')
+
+# Generate presigned URL (1 hour expiry)
+url = s3.generate_presigned_url('get_object', 
+    Params={'Bucket': 'my-app-assets', 'Key': 'uploads/file.txt'}, 
+    ExpiresIn=3600)
+```
+
+### Lifecycle Rules
+```hcl
+lifecycle_rules = [
+  {
+    id = "cleanup-old-versions"
+    enabled = true
+    prefix = ""
+    expiration_days = 0                              # Keep current versions
+    noncurrent_version_expiration_days = 90          # Delete old versions after 90 days
+    noncurrent_version_transition_days = 30          # Move to IA after 30 days
+    noncurrent_version_transition_storage_class = "STANDARD_IA"
+  }
+]
+```
+
+## Cost Optimization
+
+- **Standard Storage**: $0.023/GB/month
+- **Standard-IA**: $0.0125/GB/month (30+ days old)
+- **Lifecycle transitions**: Move old versions to cheaper storage
+- **Version cleanup**: Delete old versions to reduce costs
 
 ## Resources Created
 
@@ -10,45 +71,6 @@ This module provisions an S3 bucket with configurable features including version
 - **Public Access Block**: Controls to prevent public access
 - **Lifecycle Rules**: Automated object management
 - **Access Logging**: Optional request logging
-
-## Usage
-
-```hcl
-module "s3_bucket" {
-  source = "../08_commons/s3-bucket"
-  
-  app_name   = "your-app-name"
-  bucket_name = "assets"
-  
-  # Optional configurations
-  enable_versioning = true
-  enable_encryption = true
-  block_public_access = true
-  enable_logging = false
-  
-  # Lifecycle rules
-  lifecycle_rules = [
-    {
-      id                           = "default-rule"
-      enabled                      = true
-      prefix                       = ""
-      expiration_days              = 0  # No expiration for current versions
-      noncurrent_version_expiration_days = 90
-      noncurrent_version_transition_days = 30
-      noncurrent_version_transition_storage_class = "STANDARD_IA"
-    },
-    {
-      id                           = "logs-rule"
-      enabled                      = true
-      prefix                       = "logs/"
-      expiration_days              = 30
-      noncurrent_version_expiration_days = 7
-      noncurrent_version_transition_days = 0
-      noncurrent_version_transition_storage_class = "STANDARD_IA"
-    }
-  ]
-}
-```
 
 ## Features
 
