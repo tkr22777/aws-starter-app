@@ -1,6 +1,6 @@
 # Network Module
 
-Core networking infrastructure with VPC, subnets, and ECR repository.
+Core networking infrastructure with VPC and subnets.
 
 ## ⚠️ **CRITICAL: Subnet Change Impact**
 
@@ -29,7 +29,6 @@ terraform apply
 - **Subnets**: Main workload subnet + HA subnet for multi-AZ services
 - **Internet Gateway**: Public internet connectivity
 - **Route Tables**: Routing for internet traffic
-- **ECR Repository**: Container registry for Docker images
 
 ## Architecture
 
@@ -67,7 +66,6 @@ terraform apply
 
 - `02-vpc.tf`: VPC, Internet Gateway, Route Table
 - `03-subnet.tf`: Subnet definitions and associations
-- `04-ecr.tf`: Container registry
 
 ## Usage
 
@@ -79,10 +77,3 @@ Provides foundational networking for all other modules.
 - HA Subnet (CIDR: 10.0.3.0/24) in us-east-1b
 - Internet Gateway
 - Route Table with public routes
-
-## ECR Resource Created
-
-- **ECR Repository** (`aws_ecr_repository.app_ecr`)
-  - Function: Provides a private Docker container registry to store, manage, and deploy Docker container images.
-  - Relation: Used by services (e.g., ECS, EKS, or other container platforms) to pull application images for deployment. Essential for containerized application workflows.
-  - Configuration: Image scanning on push is enabled for vulnerability detection; images are immutable to prevent overwriting.
