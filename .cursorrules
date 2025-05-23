@@ -156,6 +156,7 @@ tags = {
 ### Testing Strategy
 - Use `terraform plan` to verify changes
 - Test with `terraform apply` in development first
+- **Live Output**: Always run `terraform apply` with visible terminal output so user can monitor deployment progress
 - Validate outputs match expected format
 - Use AWS CLI to spot-check deployed resources
 
