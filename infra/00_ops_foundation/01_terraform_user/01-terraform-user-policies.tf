@@ -261,6 +261,7 @@ resource "aws_iam_policy" "iam_management_policy" {
           "iam:PassRole", 
           "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
           "iam:CreateServiceLinkedRole",
+          "iam:ListInstanceProfilesForRole",
           "iam:CreatePolicy", "iam:DeletePolicy", "iam:TagPolicy", "iam:GetPolicy", "iam:GetPolicyVersion",
           "iam:ListPolicyVersions", "iam:CreatePolicyVersion", "iam:DeletePolicyVersion", "iam:SetDefaultPolicyVersion",
           "iam:AttachRolePolicy", "iam:DetachRolePolicy", 
