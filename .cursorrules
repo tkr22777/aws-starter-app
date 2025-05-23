@@ -1,0 +1,215 @@
+* Engineering mindset:
+- You are a principal software engineer.
+- You are responsible for:
+  - the code quality of the software.
+  - the code organization and readability of the software.
+
+* Workflow and verification:
+- common:
+- Create detailed step-by-step plans before implementing changes. For complex changes affecting multiple files, break down into smaller, focused plans. Complete and verify each sub-plan before proceeding to ensure stability and correctness.
+- Chain multiple commands so one execution verifies functionality changes; add delay between dependent commands if needed.
+- When reorganizing files, remove old files after verifying their replacements are in place
+
+* Codebase organization:
+- Keep README.md concise with high-level technical information for engineers. Ensure it reflects the current state of the codebase without change history.
+
+# Infrastructure as Code Guidelines
+
+## Project Structure
+
+- **Modular Design**: Each directory represents a deployable unit
+- **Ordered Dependencies**: Deploy in numbered order (00, 01, 02...)
+- **Single Responsibility**: Each module handles one logical concern
+- **Commons Pattern**: Shared resources in `08_commons/`
+
+## Terraform Standards
+
+### File Organization
+- `00-variables.tf`: Input variables with descriptions
+- `01-data.tf`: Data sources and external references  
+- `02-main.tf`: Provider and backend configuration
+- `03-*.tf`: Resource definitions (numbered by type)
+- `04-outputs.tf`: Output values and CLI examples
+
+### Naming Conventions
+```hcl
+# Resources: service-purpose-modifier
+resource "aws_s3_bucket" "app_assets_bucket" {}
+
+# Variables: snake_case with clear intent
+variable "database_instance_class" {}
+
+# Outputs: descriptive with usage context
+output "db_connection_string" {}
+```
+
+### Backend Configuration
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "terraform-state-bucket"
+    key            = "module-name/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-state-locks"
+  }
+}
+```
+
+## Deployment Process
+
+### Initial Setup (Root Credentials)
+1. Deploy state bucket: `00_ops_foundation/00_state_bucket`
+2. Deploy terraform user: `00_ops_foundation/01_terraform_user`
+3. Switch to terraform_user credentials for all subsequent deployments
+
+### Application Deployment (Terraform User)
+```bash
+# Template for each module
+cd infra/{module_name}
+terraform init
+terraform plan
+terraform apply
+```
+
+### Dependency Order
+1. Foundation (state, IAM)
+2. Authentication (Cognito)
+3. Network (VPC, ECR)
+4. Database (RDS)
+5. Compute (EC2)
+6. Connectivity (EC2-RDS)
+7. Messaging (SQS)
+8. Serverless (Lambda)
+9. Commons (security, logging, storage)
+10. Service Users (external access)
+
+## Security & Compliance
+
+### IAM Best Practices
+- **Least Privilege**: Minimum required permissions
+- **Policy Separation**: Logical grouping of permissions
+- **Service Users**: External access with specific resource targeting
+- **No Hardcoded Credentials**: Use IAM roles inside VPC
+
+### Encryption Standards
+- **KMS**: Customer-managed keys for all encryption
+- **S3**: Server-side encryption enabled
+- **RDS**: Encryption at rest and in transit
+- **Secrets Manager**: Automatic encryption
+
+### Logging & Monitoring
+- **CloudTrail**: Full audit logging for compliance
+- **CloudWatch Logs**: Application and system logs
+- **Metric Filters**: Automated alerting on errors
+- **Log Retention**: Cost-optimized retention periods
+
+## Resource Management
+
+### Tagging Strategy
+```hcl
+tags = {
+  Name        = "${var.app_name}-${var.environment}-resource-name"
+  Environment = var.environment
+  Project     = var.app_name
+  Module      = "module-name"
+  ManagedBy   = "terraform"
+}
+```
+
+### Cost Optimization
+- **Lifecycle Rules**: S3 object transitions
+- **Log Retention**: Appropriate retention periods
+- **Instance Sizing**: Right-sized for workload
+- **Reserved Capacity**: For production workloads
+
+## Code Quality
+
+### Module Design
+- **Configurable Defaults**: Sensible defaults with override options
+- **Comprehensive Outputs**: ARNs, endpoints, CLI examples
+- **Error Handling**: Validation and constraints
+- **Documentation**: Clear README with usage examples
+
+### Testing Strategy
+- Use `terraform plan` to verify changes
+- Test with `terraform apply` in development first
+- Validate outputs match expected format
+- Use AWS CLI to spot-check deployed resources
+
+### Change Management
+- **Small Changes**: Deploy incremental updates
+- **State Management**: Never edit state files manually
+- **Backup Strategy**: S3 versioning for state files
+- **Rollback Plan**: Keep previous working configurations
+
+## Development Workflow
+
+### Making Changes
+1. Create feature branch
+2. Modify terraform files
+3. Test with `terraform plan`
+4. Apply in development environment
+5. Validate changes work as expected
+6. Merge to main branch
+7. Apply to production
+
+### Adding New Modules
+1. Create numbered directory (e.g., `10_new_module/`)
+2. Follow standard file structure
+3. Add to main README deployment order
+4. Test deployment dependencies
+5. Update related modules if needed
+
+### Debugging Issues
+- Check terraform state: `terraform show`
+- Review AWS console for resource status
+- Use AWS CLI to verify configurations
+- Check CloudTrail for API call errors
+- Review terraform logs for detailed errors
+
+## Documentation Standards
+
+### README Structure
+```markdown
+# Module Name
+
+Brief description of purpose and resources created.
+
+## Configuration
+
+Key terraform.tfvars settings with examples.
+
+## Usage
+
+AWS CLI examples and application integration code.
+
+## Cost/Security Notes
+
+Important operational considerations.
+```
+
+### Code Comments
+```hcl
+# Resource purpose and any special configuration notes
+resource "aws_instance" "app_server" {
+  # Instance configuration
+  instance_type = var.instance_type
+  
+  # Security: Attach IAM role instead of access keys
+  iam_instance_profile = aws_iam_instance_profile.app_profile.name
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+- **State Lock**: Check DynamoDB for stuck locks
+- **Permission Denied**: Verify terraform_user policies
+- **Resource Conflicts**: Check for naming collisions
+- **Dependency Errors**: Deploy modules in correct order
+
+### Recovery Procedures
+- **State Corruption**: Restore from S3 backup
+- **Failed Apply**: Use `terraform destroy` and redeploy
+- **Resource Drift**: Import existing resources
+- **Access Issues**: Regenerate service user credentials
