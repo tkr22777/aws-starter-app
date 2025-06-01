@@ -14,18 +14,31 @@ resource "aws_iam_policy" "iam_management_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "IAMRoleManagement",
+        Sid    = "IAMReadAccess",
+        Effect = "Allow",
+        Action = [
+          "iam:ListAccountAliases", "iam:GetAccountSummary",
+          "iam:GetUser", "iam:ListUsers", "iam:GetRole", "iam:ListRoles", 
+          "iam:GetPolicy", "iam:ListPolicies", "iam:ListAttachedRolePolicies", 
+          "iam:GetRolePolicy", "iam:ListRolePolicies",
+          "iam:GetGroup", "iam:ListGroups", "iam:ListAttachedGroupPolicies", 
+          "iam:GetGroupPolicy", "iam:ListGroupPolicies"
+        ],
+        Resource = "*"
+      },
+      {
+        Sid    = "IAMManagement",
         Effect = "Allow",
         Action = [
           "iam:PassRole", 
           "iam:CreateRole", "iam:UpdateRole", "iam:DeleteRole", "iam:TagRole",
           "iam:CreateServiceLinkedRole",
           "iam:ListInstanceProfilesForRole",
-          "iam:CreatePolicy", "iam:DeletePolicy", "iam:TagPolicy", "iam:GetPolicy", "iam:GetPolicyVersion",
+          "iam:CreatePolicy", "iam:DeletePolicy", "iam:TagPolicy", "iam:GetPolicyVersion",
           "iam:ListPolicyVersions", "iam:CreatePolicyVersion", "iam:DeletePolicyVersion", "iam:SetDefaultPolicyVersion",
           "iam:AttachRolePolicy", "iam:DetachRolePolicy", 
           "iam:PutRolePolicy", "iam:DeleteRolePolicy",
-          "iam:CreateUser", "iam:DeleteUser", "iam:GetUser", "iam:ListUsers", "iam:TagUser", "iam:UntagUser", "iam:UpdateUser",
+          "iam:CreateUser", "iam:DeleteUser", "iam:TagUser", "iam:UntagUser", "iam:UpdateUser",
           "iam:ListGroupsForUser", "iam:AddUserToGroup", "iam:RemoveUserFromGroup", 
           "iam:CreateAccessKey", "iam:DeleteAccessKey", "iam:UpdateAccessKey", "iam:ListAccessKeys", "iam:GetAccessKeyLastUsed",
           "iam:AttachUserPolicy", "iam:DetachUserPolicy", "iam:ListAttachedUserPolicies", 

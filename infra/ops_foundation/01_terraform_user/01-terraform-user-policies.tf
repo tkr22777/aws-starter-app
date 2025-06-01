@@ -20,10 +20,10 @@ resource "aws_iam_group" "terraform_user_group" {
   name = var.terraform_user_group_name
 }
 
-# Core policy with simple permissions that don't warrant separate policies
+# Core policy with essential Terraform operations and state management
 resource "aws_iam_policy" "terraform_user_group_policy" {
   name        = var.terraform_user_group_policy_name
-  description = "Core policy for terraform infrastructure management - read access and state management"
+  description = "Core policy for Terraform state management and basic infrastructure discovery"
   
   tags = {
     Name = var.terraform_user_group_policy_name
@@ -33,20 +33,11 @@ resource "aws_iam_policy" "terraform_user_group_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "ReadOnlyAccess",
+        Sid    = "BasicInfrastructureDiscovery",
         Effect = "Allow",
         Action = [
-          "ec2:Describe*", "rds:Describe*", "ecr:Describe*", "ecr:Get*", "ecr:List*",
-          "ecs:Describe*", "ecs:List*", "cognito-idp:Describe*", "cognito-idp:List*", "cognito-idp:Get*",
-          "s3:GetBucketLocation", "s3:ListAllMyBuckets",
-          "iam:ListAccountAliases", "iam:GetAccountSummary",
-          "iam:GetUser", "iam:ListUsers", "iam:GetRole", "iam:ListRoles", "iam:GetPolicy", "iam:ListPolicies", "iam:ListAttachedRolePolicies", "iam:GetRolePolicy", "iam:ListRolePolicies",
-          "iam:GetGroup", "iam:ListGroups", "iam:ListAttachedGroupPolicies", "iam:GetGroupPolicy", "iam:ListGroupPolicies",
-          "sts:GetCallerIdentity", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricData",
-          "cloudwatch:GetMetricStatistics", "cloudwatch:ListMetrics",
-          "dynamodb:DescribeTable", "dynamodb:List*", "dynamodb:DescribeTimeToLive", "dynamodb:DescribeContinuousBackups",
-          "cloudtrail:ListTrails", "cloudtrail:DescribeTrails",
-          "lambda:ListFunctions", "lambda:GetFunction",
+          "ec2:Describe*", "rds:Describe*", 
+          "sts:GetCallerIdentity",
           "tag:GetResources", "tag:GetTagKeys", "tag:GetTagValues"
         ],
         Resource = "*"
