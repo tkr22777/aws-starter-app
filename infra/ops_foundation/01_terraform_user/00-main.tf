@@ -10,7 +10,7 @@ terraform {
   
   backend "s3" {
     bucket         = "terraform-state-store-24680"
-    key            = "00_ops_foundation/01_terraform_user/terraform.tfstate"
+    key            = "ops_foundation/01_terraform_user/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-locks"
   }

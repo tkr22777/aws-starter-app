@@ -1,41 +1,41 @@
 variable "app_name" {
-  description = "Application name, used for tagging resources."
+  description = "The name of the application"
   type        = string
-  default     = "ops-foundation"
+  default     = "aws-starter-app"
 }
 
 variable "terraform_user_name" {
-  description = "The name for the IAM user for Terraform operations."
+  description = "The name of the IAM user for Terraform"
   type        = string
   default     = "terraform_user"
 }
 
+variable "terraform_user_group_membership_name" {
+  description = "The name of the IAM group membership for Terraform user"
+  type        = string
+  default     = "terraform_user_group_membership"
+}
+
 variable "terraform_user_group_name" {
-  description = "The name for the IAM group for the Terraform user."
+  description = "The name of the IAM group for Terraform user"
   type        = string
   default     = "terraform_user_group"
 }
 
 variable "terraform_user_group_policy_name" {
-  description = "The name for the IAM policy attached to the Terraform user group."
+  description = "The name of the IAM policy for Terraform user group"
   type        = string
   default     = "terraform_user_group_policy"
 }
 
-variable "terraform_user_group_membership_name" {
-  description = "The name for the IAM group membership resource."
-  type        = string
-  default     = "terraform_user_group_membership"
-}
-
 variable "state_bucket_name_for_policy" {
-  description = "The name of the S3 bucket used for Terraform state (for IAM policy)."
+  description = "The name of the S3 bucket used for storing Terraform state"
   type        = string
   default     = "terraform-state-store-24680"
 }
 
 variable "dynamodb_lock_table_name_for_policy" {
-  description = "The name of the DynamoDB table for state locking (for IAM policy)."
+  description = "The name of the DynamoDB table used for Terraform state locking"
   type        = string
   default     = "terraform-state-locks"
 } 
