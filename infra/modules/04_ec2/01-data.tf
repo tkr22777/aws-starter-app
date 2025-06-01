@@ -1,36 +1,30 @@
-# Get VPC info from the network module
+# Conditional data sources - only used if explicit IDs not provided
 data "aws_vpc" "app_vpc" {
+  count = var.vpc_id == "" ? 1 : 0
+  
   filter {
     name   = "tag:Name"
     values = ["${var.app_name}-vpc"]
   }
+  
+  filter {
+    name   = "tag:Environment"
+    values = [var.environment]
+  }
 }
 
-# Get subnet info from the network module - lookup by tags
 data "aws_subnet" "app_subnet" {
+  count = var.subnet_id == "" ? 1 : 0
+  
   filter {
     name   = "tag:Name"
     values = ["${var.app_name}-vpc-subnet"]
   }
-}
-
-# Get ALB security group for integration
-data "aws_security_group" "alb_sg" {
+  
   filter {
-    name   = "tag:Name"
-    values = ["${var.app_name}-alb-sg"]
+    name   = "tag:Environment"
+    values = [var.environment]
   }
-}
-
-# Get ALB for target group attachment
-data "aws_lb" "app_alb" {
-  name = "${var.app_name}-alb"
-}
-
-# Get ALB listener for routing rules
-data "aws_lb_listener" "app_listener" {
-  load_balancer_arn = data.aws_lb.app_alb.arn
-  port              = 80
 }
 
 # Get ECS-optimized Amazon Linux 2023 AMI (has Docker pre-installed)
@@ -52,4 +46,10 @@ data "aws_ami" "ecs_optimized" {
     name   = "state"
     values = ["available"]
   }
+}
+
+# Locals to handle both explicit IDs and data source discovery
+locals {
+  vpc_id    = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.app_vpc[0].id
+  subnet_id = var.subnet_id != "" ? var.subnet_id : data.aws_subnet.app_subnet[0].id
 } 

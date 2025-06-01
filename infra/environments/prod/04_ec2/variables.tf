@@ -1,14 +1,15 @@
 # =============================================================================
 # Application Configuration
 # =============================================================================
+
 variable "app_name" {
   description = "Name of the application for tagging and resource naming."
   type        = string
-  default     = "the-awesome-app"
+  default     = "the-awesome-app-prod"
 }
 
 variable "environment" {
-  description = "Environment name (e.g., prod, dev, staging)."
+  description = "Environment name."
   type        = string
   default     = "prod"
 }
@@ -16,20 +17,21 @@ variable "environment" {
 # =============================================================================
 # EC2 Instance Configuration
 # =============================================================================
+
 variable "instance_type" {
-  description = "EC2 instance type (e.g., t3.micro, t3.small, m5.large)."
+  description = "EC2 instance type for production workload."
   type        = string
-  default     = "t3.micro"
+  default     = "t3.small" # Slightly larger for production
 }
 
 variable "root_volume_size" {
   description = "Size of the root EBS volume in GB."
   type        = number
-  default     = 20
+  default     = 30 # Larger for production
 }
 
 variable "root_volume_type" {
-  description = "Type of the root EBS volume (gp3, gp2, io1, io2)."
+  description = "Type of the root EBS volume."
   type        = string
   default     = "gp3"
 }
@@ -43,7 +45,7 @@ variable "root_volume_encrypted" {
 variable "enable_detailed_monitoring" {
   description = "Enable detailed CloudWatch monitoring for the instance."
   type        = bool
-  default     = false
+  default     = false # Disabled due to permission limitations
 }
 
 variable "associate_public_ip" {
@@ -53,40 +55,17 @@ variable "associate_public_ip" {
 }
 
 # =============================================================================
-# Application Configuration
-# =============================================================================
-variable "api_path_prefix" {
-  description = "Path prefix for API routing (e.g., /api/*)."
-  type        = string
-  default     = "/api/*"
-}
-
-# =============================================================================
 # Security Configuration
 # =============================================================================
+
 variable "allowed_ssh_cidr" {
-  description = "CIDR block allowed for SSH access to EC2 instance (e.g., your IP/32)."
+  description = "CIDR block allowed for SSH access to EC2 instance."
   type        = string
-  default     = "10.0.0.0/8" # Default to private networks only
+  default     = "10.0.0.0/8" # Restrict to private networks
 }
 
 variable "enable_ssh_access" {
   description = "Whether to enable SSH access to the instance."
   type        = bool
   default     = true
-}
-
-# =============================================================================
-# Network Configuration (Optional - uses data sources if not provided)
-# =============================================================================
-variable "vpc_id" {
-  description = "ID of the VPC where the EC2 instance will be created. If not provided, will be discovered via data source."
-  type        = string
-  default     = ""
-}
-
-variable "subnet_id" {
-  description = "ID of the subnet where the EC2 instance will be placed. If not provided, will be discovered via data source."
-  type        = string
-  default     = ""
 } 
