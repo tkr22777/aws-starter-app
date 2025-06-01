@@ -1,7 +1,9 @@
-# Security group for Application Load Balancer
+# =============================================================================
+# Security Group for Application Load Balancer
+# =============================================================================
 resource "aws_security_group" "alb_sg" {
-  name_prefix = "${var.app_name}-alb-"
-  vpc_id      = data.aws_vpc.app_vpc.id
+  name_prefix = "${var.app_name}-${var.environment}-alb-"
+  vpc_id      = local.vpc_id
   description = "Security group for Application Load Balancer"
 
   # Allow HTTP traffic from anywhere
@@ -32,51 +34,69 @@ resource "aws_security_group" "alb_sg" {
   }
 
   tags = {
-    Name = "${var.app_name}-alb-sg"
+    Name        = "${var.app_name}-${var.environment}-alb-sg"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "02a_alb"
+    ManagedBy   = "terraform"
   }
 }
 
+# =============================================================================
 # Application Load Balancer
+# =============================================================================
 resource "aws_lb" "app_alb" {
-  name               = "${var.app_name}-alb"
-  internal           = false
+  name               = "${var.app_name}-${var.environment}-alb"
+  internal           = var.internal
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [data.aws_subnet.main_subnet.id, data.aws_subnet.subnet_ha_2.id]
+  subnets            = local.subnet_ids
 
-  enable_deletion_protection = false
+  enable_deletion_protection = var.enable_deletion_protection
 
   tags = {
-    Name = "${var.app_name}-alb"
+    Name        = "${var.app_name}-${var.environment}-alb"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "02a_alb"
+    ManagedBy   = "terraform"
   }
 }
 
-# Default target group (for health checks)
+# =============================================================================
+# Default Target Group (for health checks)
+# =============================================================================
 resource "aws_lb_target_group" "default_tg" {
-  name        = "${var.app_name}-default-tg"
+  name        = "${substr(var.app_name, 0, 15)}-${var.environment}-def-tg"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = data.aws_vpc.app_vpc.id
+  vpc_id      = local.vpc_id
   target_type = "ip"
 
   health_check {
-    enabled             = true
-    healthy_threshold   = 2
-    interval            = 30
-    matcher             = "200,404"
-    path                = "/"
+    enabled             = var.health_check_enabled
+    healthy_threshold   = var.healthy_threshold
+    interval            = var.health_check_interval
+    matcher             = var.health_check_matcher
+    path                = var.health_check_path
     port                = "traffic-port"
     protocol            = "HTTP"
-    timeout             = 5
-    unhealthy_threshold = 2
+    timeout             = var.health_check_timeout
+    unhealthy_threshold = var.unhealthy_threshold
   }
 
   tags = {
-    Name = "${var.app_name}-default-tg"
+    Name        = "${var.app_name}-${var.environment}-default-tg"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "02a_alb"
+    ManagedBy   = "terraform"
   }
 }
 
-# Default listener for ALB (returns 404 for unmatched paths)
+# =============================================================================
+# Default Listener for ALB (returns 404 for unmatched paths)
+# =============================================================================
 resource "aws_lb_listener" "app_listener" {
   load_balancer_arn = aws_lb.app_alb.arn
   port              = "80"
@@ -84,15 +104,19 @@ resource "aws_lb_listener" "app_listener" {
 
   default_action {
     type = "fixed-response"
-    
+
     fixed_response {
       content_type = "text/plain"
-      message_body = "Service not found"
+      message_body = "Service not found - ${var.app_name} ${var.environment}"
       status_code  = "404"
     }
   }
 
   tags = {
-    Name = "${var.app_name}-listener"
+    Name        = "${var.app_name}-${var.environment}-listener"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "02a_alb"
+    ManagedBy   = "terraform"
   }
 } 

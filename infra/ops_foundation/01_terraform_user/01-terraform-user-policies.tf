@@ -302,6 +302,7 @@ resource "aws_iam_policy" "alb_management_policy" {
           "elasticloadbalancing:CreateListener",
           "elasticloadbalancing:DeleteListener",
           "elasticloadbalancing:ModifyListener",
+          "elasticloadbalancing:DescribeListenerAttributes",
           "elasticloadbalancing:CreateRule",
           "elasticloadbalancing:DeleteRule",
           "elasticloadbalancing:ModifyRule",
