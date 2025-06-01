@@ -228,6 +228,30 @@ terraform plan
 terraform apply
 ```
 
+### Post-Deployment Verification (AWS CLI)
+- **Always verify with AWS CLI**: After terraform deployments, use AWS CLI to confirm actual resource state
+- **Audit for orphaned resources**: Check for resources not managed by current Terraform state
+- **Validate cleanup operations**: Ensure deleted resources are actually removed from AWS
+- **Cross-reference naming**: Verify resource names match expected patterns to catch duplicates
+
+**Standard Verification Commands**:
+```bash
+# Core infrastructure audit
+aws ec2 describe-vpcs --region us-east-1 --output json
+aws ec2 describe-instances --region us-east-1 --output json  
+aws rds describe-db-instances --region us-east-1 --output json
+aws elbv2 describe-load-balancers --region us-east-1 --output json
+aws elbv2 describe-target-groups --region us-east-1 --output json
+
+# Check for orphaned resources in specific VPC
+aws ec2 describe-security-groups --region us-east-1 --filters "Name=vpc-id,Values=VPC_ID"
+aws ec2 describe-subnets --region us-east-1 --filters "Name=vpc-id,Values=VPC_ID"
+aws ec2 describe-route-tables --region us-east-1 --filters "Name=vpc-id,Values=VPC_ID"
+
+# Verify resource naming patterns
+aws ec2 describe-vpcs --region us-east-1 --filters "Name=tag:Name,Values=*app-name*"
+```
+
 ### Dependency Order
 1. Foundation (state, IAM)
 2. Authentication (Cognito)
@@ -331,3 +355,64 @@ find infra/ -name "*.tf" -exec terraform fmt -check {} \;
 
 ### Testing Strategy
 - Use `terraform plan`
+- **AWS CLI Verification**: Always validate actual AWS resource state after deployments
+- **Orphan Detection**: Use AWS CLI to identify resources not in Terraform state
+- **Cleanup Validation**: Verify deleted resources are actually removed from AWS account
+- **Naming Conflict Detection**: Check for duplicate resource names causing "multiple resources matched" errors
+
+## Code Quality
+
+### Module Design
+- **Configurable Defaults**: Sensible defaults with override options
+- **Comprehensive Outputs**: ARNs, endpoints, CLI examples
+- **Error Handling**: Validation and constraints
+- **Documentation**: Clear README with usage examples
+
+### Standards Validation
+**Code Review Checklist**: Verify these patterns in all modules during reviews and testing:
+
+- **Data Source Pattern**: ✅ All external resource lookups use `filter` blocks (never `tags` blocks)
+  ```bash
+  # Check for incorrect tags usage
+  grep -r "tags = {" infra/ --include="*.tf" | grep -v "resource"
+  ```
+- **Backend Configuration**: ✅ Modules have NO backend blocks (only environment-level configs)
+- **Terraform Version**: ✅ All modules use consistent Terraform `~> 1.5.0` and AWS provider `~> 5.0`
+- **Naming Convention**: ✅ Resources follow `${var.app_name}-${var.environment}-resource-type` pattern
+- **Conditional Lookups**: ✅ Data sources use `count` parameter for optional resource discovery
+- **Variable Organization**: ✅ Variables grouped by logical sections with clear headers
+- **File Structure**: ✅ Files follow numbered naming convention (00-variables.tf, 01-data.tf, etc.)
+- **Environment Integration**: ✅ Modules use remote state for dependency management
+- **Tagging Compliance**: ✅ All resources include required tags (Name, Environment, Project, Module, ManagedBy)
+- **Code Formatting**: ✅ All files formatted with `terraform fmt`
+
+**Automated Checks**: Run these commands to validate standards compliance:
+```bash
+# Check for deprecated tags usage in data sources
+grep -r "tags = {" infra/ --include="*.tf" | grep "data\."
+
+# Verify filter pattern usage
+grep -r "filter {" infra/ --include="*.tf" | grep -A 2 "tag:Name"
+
+# Check variable organization (should have section headers)
+grep -r "# =============" infra/ --include="*variables.tf"
+
+# Find backend blocks in base modules (should be empty)
+find infra/ -name "*.tf" -not -path "*/environments/*" -exec grep -l "backend" {} \;
+
+# Check Terraform version consistency
+grep -r "required_version" infra/ --include="*.tf" | grep -v "~> 1.5.0"
+
+# Verify AWS provider version consistency  
+grep -r "version.*aws" infra/ --include="*.tf" | grep -v "~> 5.0"
+
+# Check code formatting
+find infra/ -name "*.tf" -exec terraform fmt -check {} \;
+```
+
+### Testing Strategy
+- Use `terraform plan`
+- **AWS CLI Verification**: Always validate actual AWS resource state after deployments
+- **Orphan Detection**: Use AWS CLI to identify resources not in Terraform state
+- **Cleanup Validation**: Verify deleted resources are actually removed from AWS account
+- **Naming Conflict Detection**: Check for duplicate resource names causing "multiple resources matched" errors
