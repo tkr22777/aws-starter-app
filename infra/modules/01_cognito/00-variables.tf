@@ -1,6 +1,6 @@
 variable "app_name" {
   type        = string
-  description = "Name tag of the application"
+  description = "Base name of the application, used for resource naming and tagging."
   default     = "the-awesome-app"
 }
 
