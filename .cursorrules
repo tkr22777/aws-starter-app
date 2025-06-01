@@ -173,11 +173,14 @@ tags = {
 ### Making Changes
 1. Create feature branch
 2. Modify terraform files
-3. Test with `terraform plan`
-4. Apply in development environment
-5. Validate changes work as expected
-6. Merge to main branch
-7. Apply to production
+3. Test with `terraform plan` and verify output
+4. NEVER commit changes without showing plan output
+5. ALWAYS ask for explicit user approval before committing
+6. NEVER push changes without user confirmation
+7. Apply in development environment
+8. Validate changes work as expected
+9. Merge to main branch
+10. Apply to production
 
 ### Commit Message Standards
 - **Keep It Concise**: Use single line summaries (50-72 characters)
