@@ -10,6 +10,18 @@
 - Chain multiple commands so one execution verifies functionality changes; add delay between dependent commands if needed.
 - When reorganizing files, remove old files after verifying their replacements are in place
 
+* Terminal command execution:
+- **Minimal echoes**: Avoid excessive echo statements. Terminal output is sufficient for understanding command results.
+- **Selective concatenation**: Only concatenate commands when performing many similar operations (e.g., deleting 10 resources). Don't concatenate unrelated commands.
+- **Preserve important output**: For critical commands, don't pipe to jq or other tools if error details might be lost. Let raw output show first.
+- **Separate long-running commands**: Don't concatenate commands that take time to execute. Run them separately so progress can be monitored.
+- **Trust terminal output**: Command output usually provides sufficient information without additional logging or echoing.
+
+* File and directory operations:
+- **Prefer terminal commands**: For moving, renaming, or reorganizing files/directories, use terminal commands (`mv`, `cp`, `mkdir`, etc.) instead of reading entire files and recreating them
+- **Direct operations**: Use `mv source target` for renames/moves rather than complex file manipulation
+- **Efficiency first**: Terminal commands are faster and preserve file metadata, permissions, and timestamps
+
 * Codebase organization:
 - Keep README.md concise with high-level technical information for engineers. Ensure it reflects the current state of the codebase without change history.
 
