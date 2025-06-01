@@ -1,6 +1,6 @@
 # ECS Cluster
 resource "aws_ecs_cluster" "app_cluster" {
-  name = "${var.app_name}-cluster"
+  name = "${var.app_name}-${var.environment}-cluster"
 
   setting {
     name  = "containerInsights"
@@ -8,13 +8,17 @@ resource "aws_ecs_cluster" "app_cluster" {
   }
 
   tags = {
-    Name = "${var.app_name}-cluster"
+    Name        = "${var.app_name}-${var.environment}-cluster"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "10_ecs"
+    ManagedBy   = "terraform"
   }
 }
 
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app_task" {
-  family                   = "${var.app_name}-task"
+  family                   = "${var.app_name}-${var.environment}-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.cpu
@@ -25,7 +29,7 @@ resource "aws_ecs_task_definition" "app_task" {
   container_definitions = jsonencode([
     {
       name      = var.app_name
-      image     = "${data.aws_ecr_repository.app_repo.repository_url}:${var.container_tag}"
+      image     = var.container_image != "" ? var.container_image : "${data.aws_ecr_repository.app_repo[0].repository_url}:${var.container_tag}"
       essential = true
       
       portMappings = [
@@ -50,6 +54,10 @@ resource "aws_ecs_task_definition" "app_task" {
           value = var.app_name
         },
         {
+          name  = "ENVIRONMENT"
+          value = var.environment
+        },
+        {
           name  = "PORT"
           value = tostring(var.container_port)
         }
@@ -58,74 +66,82 @@ resource "aws_ecs_task_definition" "app_task" {
   ])
 
   tags = {
-    Name = "${var.app_name}-task-definition"
+    Name        = "${var.app_name}-${var.environment}-task-definition"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "10_ecs"
+    ManagedBy   = "terraform"
   }
 }
 
-# ECS Service
+# ECS Service (Standalone - No ALB)
 resource "aws_ecs_service" "app_service" {
-  name            = "${var.app_name}-service"
+  name            = "${var.app_name}-${var.environment}-service"
   cluster         = aws_ecs_cluster.app_cluster.id
   task_definition = aws_ecs_task_definition.app_task.arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
+  
+  enable_execute_command = var.enable_execute_command
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_tasks_sg.id]
-    subnets          = [data.aws_subnet.main_subnet.id, data.aws_subnet.subnet_ha_2.id]
-    assign_public_ip = true
+    subnets          = [var.subnet_id != "" ? var.subnet_id : data.aws_subnet.main_subnet[0].id]
+    assign_public_ip = var.assign_public_ip
   }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.ecs_tg.arn
-    container_name   = var.app_name
-    container_port   = var.container_port
-  }
-
-  depends_on = [aws_lb_listener_rule.ecs_rule]
 
   tags = {
-    Name = "${var.app_name}-service"
+    Name        = "${var.app_name}-${var.environment}-service"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "10_ecs"
+    ManagedBy   = "terraform"
   }
 }
 
-# Auto Scaling Target
+# Auto Scaling Target (Conditional)
 resource "aws_appautoscaling_target" "ecs_target" {
-  max_capacity       = 10
+  count = var.enable_auto_scaling ? 1 : 0
+
+  max_capacity       = var.max_capacity
   min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.app_cluster.name}/${aws_ecs_service.app_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
 
-# Auto Scaling Policy - CPU
+# Auto Scaling Policy - CPU (Conditional)
 resource "aws_appautoscaling_policy" "ecs_cpu_policy" {
-  name               = "${var.app_name}-cpu-scaling"
+  count = var.enable_auto_scaling ? 1 : 0
+
+  name               = "${var.app_name}-${var.environment}-cpu-scaling"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
-  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+  resource_id        = aws_appautoscaling_target.ecs_target[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target[0].service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
-    target_value = 70.0
+    target_value = var.cpu_target_value
   }
 }
 
-# Auto Scaling Policy - Memory
+# Auto Scaling Policy - Memory (Conditional)
 resource "aws_appautoscaling_policy" "ecs_memory_policy" {
-  name               = "${var.app_name}-memory-scaling"
+  count = var.enable_auto_scaling ? 1 : 0
+
+  name               = "${var.app_name}-${var.environment}-memory-scaling"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
-  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+  resource_id        = aws_appautoscaling_target.ecs_target[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target[0].service_namespace
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageMemoryUtilization"
     }
-    target_value = 80.0
+    target_value = var.memory_target_value
   }
 } 

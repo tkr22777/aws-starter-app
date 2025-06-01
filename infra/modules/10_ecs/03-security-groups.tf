@@ -1,16 +1,16 @@
 # Security group for ECS tasks
 resource "aws_security_group" "ecs_tasks_sg" {
-  name_prefix = "${var.app_name}-ecs-tasks-"
-  vpc_id      = data.aws_vpc.app_vpc.id
+  name_prefix = "${var.app_name}-${var.environment}-ecs-tasks-"
+  vpc_id      = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.app_vpc[0].id
   description = "Security group for ECS tasks"
 
-  # Allow traffic from ALB on container port
+  # Allow traffic on container port from VPC CIDR
   ingress {
-    from_port       = var.container_port
-    to_port         = var.container_port
-    protocol        = "tcp"
-    security_groups = [data.aws_security_group.alb_sg.id]
-    description     = "Allow traffic from ALB"
+    from_port   = var.container_port
+    to_port     = var.container_port
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_id == "" ? data.aws_vpc.app_vpc[0].cidr_block : "10.0.0.0/16"]  # Use lookup or default
+    description = "Allow traffic on container port"
   }
 
   # Allow all outbound traffic (for pulling images, etc.)
@@ -23,6 +23,10 @@ resource "aws_security_group" "ecs_tasks_sg" {
   }
 
   tags = {
-    Name = "${var.app_name}-ecs-tasks-sg"
+    Name        = "${var.app_name}-${var.environment}-ecs-tasks-sg"
+    Environment = var.environment
+    Project     = var.app_name
+    Module      = "10_ecs"
+    ManagedBy   = "terraform"
   }
 } 

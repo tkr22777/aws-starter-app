@@ -1,13 +1,30 @@
-# Data sources to lookup existing infrastructure
+# =============================================================================
+# Data Sources
+# =============================================================================
+
+# Current AWS region
+data "aws_region" "current" {}
+
+# Get current AWS account ID
+data "aws_caller_identity" "current" {}
+
+# Get VPC (conditional lookup)
 data "aws_vpc" "app_vpc" {
-  tags = {
-    Name = "${var.app_name}-vpc"
+  count = var.vpc_id == "" ? 1 : 0
+
+  filter {
+    name   = "tag:Name"
+    values = ["${var.app_name}-${var.environment}-vpc"]
   }
 }
 
+# Get main subnet
 data "aws_subnet" "main_subnet" {
-  tags = {
-    Name = "${var.app_name}-vpc-subnet"
+  count = var.subnet_id == "" ? 1 : 0
+
+  filter {
+    name   = "tag:Name"
+    values = ["${var.app_name}-${var.environment}-subnet"]
   }
 }
 
@@ -34,10 +51,8 @@ data "aws_security_group" "alb_sg" {
   }
 }
 
+# ECR Repository
 data "aws_ecr_repository" "app_repo" {
-  name = "${var.app_name}-ecr"
-}
-
-# Get current AWS region and account ID
-data "aws_region" "current" {}
-data "aws_caller_identity" "current" {} 
+  count = var.container_image == "" ? 1 : 0
+  name  = "${var.app_name}-ecr-repo"
+} 
