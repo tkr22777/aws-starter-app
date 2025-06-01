@@ -61,7 +61,7 @@ variable "associate_public_ip" {
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed for SSH access to EC2 instance."
   type        = string
-  default     = "10.0.0.0/8" # Restrict to private networks
+  default     = "0.0.0.0/0" # TESTING ONLY - For production, restrict to specific IP ranges (e.g., your office IP, VPN CIDR, or bastion host). Never use 0.0.0.0/0 in production!
 }
 
 variable "enable_ssh_access" {
