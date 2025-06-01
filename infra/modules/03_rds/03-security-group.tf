@@ -1,6 +1,7 @@
 # Security group for the RDS instance
 # This provides controlled access to the database instance
 resource "aws_security_group" "rds_sg" {
+  name        = "${var.app_name}-${var.environment}-rds-sg"
   description = "Security Group for RDS"
   vpc_id      = local.vpc_id
 
@@ -9,6 +10,6 @@ resource "aws_security_group" "rds_sg" {
   # through aws_security_group_rule resources to ensure modularity
 
   tags = {
-    Name = "${var.app_name}-rds-sg"  # This tag is used by the EC2 module for automatic discovery
+    Name = "${var.app_name}-${var.environment}-rds-sg" # This tag is used by the EC2 module for automatic discovery
   }
 } 

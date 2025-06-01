@@ -1,43 +1,28 @@
 # Conditional data sources - only used if explicit IDs not provided
 data "aws_vpc" "app_vpc" {
   count = var.vpc_id == "" ? 1 : 0
-  
+
   filter {
     name   = "tag:Name"
-    values = ["${var.app_name}-vpc"]
-  }
-  
-  filter {
-    name   = "tag:Environment"
-    values = [var.environment]
+    values = ["${var.app_name}-${var.environment}-vpc"]
   }
 }
 
 data "aws_subnet" "app_subnet" {
   count = length(var.subnet_ids) == 0 ? 1 : 0
-  
+
   filter {
     name   = "tag:Name"
-    values = ["${var.app_name}-vpc-subnet"]
-  }
-  
-  filter {
-    name   = "tag:Environment"
-    values = [var.environment]
+    values = ["${var.app_name}-${var.environment}-subnet-app"]
   }
 }
 
 data "aws_subnet" "subnet_ha_2" {
   count = length(var.subnet_ids) == 0 ? 1 : 0
-  
+
   filter {
     name   = "tag:Name"
-    values = ["${var.app_name}-subnet-2-ha"]
-  }
-  
-  filter {
-    name   = "tag:Environment"
-    values = [var.environment]
+    values = ["${var.app_name}-${var.environment}-subnet-db"]
   }
 }
 

@@ -5,7 +5,7 @@
 variable "app_name" {
   description = "Name of the application for tagging and resource naming."
   type        = string
-  default     = "the-awesome-app-prod"
+  default     = "the-awesome-app"
 }
 
 variable "environment" {
