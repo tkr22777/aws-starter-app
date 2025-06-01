@@ -20,6 +20,8 @@ Production-ready AWS infrastructure using Terraform with modular architecture an
 - **03_rds**: PostgreSQL database with encryption and configurable sizing
 - **04_ec2**: Application servers with configurable instance types and storage
 - **04a_ec2_alb**: ALB integration for EC2 instances with path-based routing
+- **10_ecs**: Standalone ECS service with Fargate (single-task, direct IP)
+- **10a_ecs_alb**: ECS ALB integration for high availability and load balancing
 
 ### 🔄 **Available Modules (Pending Environment Testing)**
 - **02a_alb**: Application Load Balancer with SSL/TLS
@@ -28,7 +30,6 @@ Production-ready AWS infrastructure using Terraform with modular architecture an
 - **07_lambda**: Serverless functions and triggers
 - **08_commons**: Shared security, logging, and storage
 - **09_svc_user**: External service access with IAM
-- **10_ecs**: Container orchestration with Fargate
 
 ## Deployment Process
 
@@ -56,8 +57,9 @@ terraform apply
 8. 🔄 Messaging (SQS)
 9. 🔄 Serverless (Lambda)
 10. 🔄 Commons (Security, Logging)
-11. 🔄 Service Users (External Access)
-12. 🔄 Container Orchestration (ECS)
+11. ✅ Container Service (ECS) - *Standalone module ready*
+12. ✅ Container ALB (ECS-ALB) - *ALB integration module ready*
+13. 🔄 Service Users (External Access)
 
 ## Recent Updates
 
@@ -65,7 +67,21 @@ terraform apply
 - **RDS Module**: Refactored with configurable sizing, encryption defaults, and environment structure
 - **EC2 Module**: Enhanced with instance type selection, storage configuration, and security settings
 - **ALB Integration**: Separated into dedicated module for clean separation of concerns
+- **ECS Modules**: Split into standalone service (10_ecs) and ALB integration (10a_ecs_alb) patterns
 - **Remote State**: All modules now use remote state for proper dependency management
+
+### ECS Architecture Patterns
+**Standalone ECS (10_ecs)**:
+- Single-task deployment with direct IP access
+- Cost-effective for development and simple services
+- No ALB dependency, optional auto-scaling
+- ECS Exec enabled for container debugging
+
+**ECS with ALB (10a_ecs_alb)**:
+- High-availability deployment with load balancing
+- Path-based routing and health checks
+- Multi-AZ redundancy and zero-downtime deployments
+- Production-ready with advanced monitoring
 
 ### Environment Structure
 All refactored modules follow standardized pattern:
@@ -76,8 +92,16 @@ All refactored modules follow standardized pattern:
 
 ## Next Steps
 
-### 🎯 **Immediate Priority: End-to-End Testing**
-Testing the complete deployment workflow for refactored modules:
+### 🎯 **Immediate Priority: ECS Module Testing**
+Testing the separated ECS deployment patterns:
+1. Deploy standalone ECS service and verify container functionality
+2. Deploy ECS ALB integration and test load balancing
+3. Validate path-based routing and health checks
+4. Test ECS Exec debugging capabilities
+5. Verify auto-scaling behavior (when enabled)
+
+### 🔄 **Infrastructure Integration Testing**
+Complete end-to-end testing for refactored modules:
 1. Deploy RDS environment and verify connectivity
 2. Deploy EC2 environment and confirm instance configuration
 3. Deploy ALB integration and test load balancing
@@ -86,11 +110,11 @@ Testing the complete deployment workflow for refactored modules:
 
 ### 🔄 **Module Conversion Pipeline**
 Continue refactoring remaining modules to environment pattern:
-- Modules 02a_alb through 10_ecs following dependency order
+- Modules 02a_alb through 09_svc_user following dependency order
 - Standardize variable organization and remote state integration
 - Add production-optimized defaults and comprehensive outputs
 
-**Goal**: Fully functional production environment with load balancing, database, container orchestration, and monitoring.
+**Goal**: Fully functional production environment with containerized services, load balancing, database, and monitoring.
 
 ## Development
 
