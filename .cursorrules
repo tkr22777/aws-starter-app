@@ -35,12 +35,23 @@
 - **Group Similar Variables**: Organize variables by logical sections with clear headers
 - **Section Headers**: Use commented section dividers for readability
 - **Logical Grouping**: Group by: Application config, VPC config, Subnet config, Database config, etc.
+- **Default Values Preferred**: Use default values in variables.tf files instead of separate .tfvars files for environment-specific configurations. This keeps configuration clean and eliminates the need for additional files.
 - **Example Structure**:
 ```hcl
 # =============================================================================
 # Application Configuration
 # =============================================================================
-variable "app_name" { ... }
+variable "app_name" { 
+  description = "Name of the application"
+  type        = string
+  default     = "the-awesome-app-prod"
+}
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "prod"
+}
 
 # =============================================================================
 # VPC Configuration  
