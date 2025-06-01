@@ -176,6 +176,7 @@ tags = {
 - **State Management**: Never edit state files manually
 - **Destructive Operations**: **NEVER** perform destructive operations (terraform force-unlock, terraform destroy, rm -rf, etc.) without explicit user consent. Always ask for permission first.
 - **Long-Running Operations**: **NEVER** run terraform apply for resources that typically take >2 minutes (ALB, RDS, EC2, NAT Gateway, etc.) without explicit user consent. Instead, provide the command for the user to run manually.
+- **Permission Scope**: **NEVER** assume permission carries over between different operations or tasks, even within the same conversation. Each distinct operation (terraform apply, terraform destroy, git commit, etc.) requires explicit user consent. Previous permission does not grant blanket authorization for future operations.
 - **Backup Strategy**: S3 versioning for state files
 - **Rollback Plan**: Keep previous working configurations
 
