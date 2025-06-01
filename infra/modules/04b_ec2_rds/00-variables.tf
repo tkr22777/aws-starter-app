@@ -4,6 +4,12 @@ variable "app_name" {
   default     = "the-awesome-app"
 }
 
+variable "environment" {
+  type        = string
+  description = "Environment name"
+  default     = "prod"
+}
+
 # Optional variables for resource override (typically not needed)
 variable "ec2_security_group_id" {
   description = "Override for EC2 security group ID"
