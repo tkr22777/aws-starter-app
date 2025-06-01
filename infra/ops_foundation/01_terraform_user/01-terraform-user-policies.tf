@@ -196,7 +196,11 @@ resource "aws_iam_policy" "compute_services_policy" {
           "lambda:ListVersionsByFunction", "lambda:PublishVersion", "lambda:CreateAlias",
           "lambda:DeleteAlias", "lambda:UpdateAlias", "lambda:GetAlias", "lambda:ListAliases",
           "lambda:AddPermission", "lambda:RemovePermission", "lambda:GetPolicy",
-          "lambda:TagResource", "lambda:UntagResource", "lambda:ListTags"
+          "lambda:TagResource", "lambda:UntagResource", "lambda:ListTags",
+          "lambda:CreateEventSourceMapping", "lambda:DeleteEventSourceMapping",
+          "lambda:GetEventSourceMapping", "lambda:ListEventSourceMappings",
+          "lambda:UpdateEventSourceMapping", "lambda:InvokeFunction",
+          "lambda:GetFunctionCodeSigningConfig"
         ],
         Resource = "*"
       },
@@ -440,6 +444,34 @@ resource "aws_iam_policy" "kms_policy" {
   })
 }
 
+resource "aws_iam_policy" "sqs_management_policy" {
+  name        = "terraform_user_sqs_management_policy"
+  description = "Policy for AWS SQS queue management"
+  
+  tags = {
+    Name = "terraform_user_sqs_management_policy"
+  }
+  
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "SQSManagement",
+        Effect = "Allow",
+        Action = [
+          "sqs:CreateQueue", "sqs:DeleteQueue", "sqs:GetQueueAttributes", "sqs:SetQueueAttributes",
+          "sqs:ListQueues", "sqs:GetQueueUrl", "sqs:SendMessage", "sqs:ReceiveMessage",
+          "sqs:DeleteMessage", "sqs:ChangeMessageVisibility", "sqs:PurgeQueue",
+          "sqs:TagQueue", "sqs:UntagQueue", "sqs:ListQueueTags",
+          "sqs:AddPermission", "sqs:RemovePermission", "sqs:SetQueuePolicy",
+          "sqs:GetQueuePolicy", "sqs:DeleteQueuePolicy"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_group_policy_attachment" "terraform_user_policy_attachment" {
   group      = aws_iam_group.terraform_user_group.name
   policy_arn = aws_iam_policy.terraform_user_group_policy.arn
@@ -483,6 +515,11 @@ resource "aws_iam_group_policy_attachment" "alb_management_policy_attachment" {
 resource "aws_iam_group_policy_attachment" "kms_policy_attachment" {
   group      = aws_iam_group.terraform_user_group.name
   policy_arn = aws_iam_policy.kms_policy.arn
+}
+
+resource "aws_iam_group_policy_attachment" "sqs_management_policy_attachment" {
+  group      = aws_iam_group.terraform_user_group.name
+  policy_arn = aws_iam_policy.sqs_management_policy.arn
 }
 
 # Outputs for the Terraform user and related resources

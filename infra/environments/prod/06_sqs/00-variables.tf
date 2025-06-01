@@ -9,7 +9,7 @@ variable "app_name" {
 }
 
 variable "environment" {
-  description = "Environment name (prod, staging, dev)"
+  description = "Environment name"
   type        = string
   default     = "prod"
 }
@@ -19,7 +19,7 @@ variable "environment" {
 # =============================================================================
 
 variable "queue_name" {
-  description = "Name of the SQS queue (will be prefixed with app_name-environment)"
+  description = "Name of the SQS queue"
   type        = string
   default     = "main-queue"
 }

@@ -1,6 +1,108 @@
 # Lambda SQS Processor Module
 
-This module creates an AWS Lambda function that processes messages from an SQS queue.
+Deploys a Lambda function with flexible SQS integration. The module can accept SQS queue information directly or lookup queues by name, making it reusable across different environments and naming conventions.
+
+## Features
+
+- **Flexible SQS Integration**: Accept queue ARN/URL directly or lookup by name
+- **Conditional Event Source Mapping**: Only creates mapping when queue information is available
+- **Environment Variables**: Automatically configures Lambda with queue details
+- **IAM Permissions**: Proper SQS read permissions and Lambda execution role
+- **Comprehensive Outputs**: ARNs, names, and CLI examples for testing
+
+## Usage
+
+### Direct SQS Queue Reference
+```hcl
+module "lambda" {
+  source = "../../modules/07_lambda"
+  
+  app_name    = "my-app"
+  environment = "prod"
+  
+  # Direct queue references
+  sqs_queue_arn = "arn:aws:sqs:us-east-1:123456789012:my-queue"
+  sqs_queue_url = "https://sqs.us-east-1.amazonaws.com/123456789012/my-queue"
+  dlq_arn       = "arn:aws:sqs:us-east-1:123456789012:my-queue-dlq"
+}
+```
+
+### Queue Lookup by Name
+```hcl
+module "lambda" {
+  source = "../../modules/07_lambda"
+  
+  app_name    = "my-app"
+  environment = "prod"
+  
+  # Lookup queue by name
+  sqs_queue_name = "my-existing-queue"
+}
+```
+
+### Remote State Integration
+```hcl
+data "terraform_remote_state" "sqs" {
+  backend = "s3"
+  config = {
+    bucket = "terraform-state-bucket"
+    key    = "sqs/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+module "lambda" {
+  source = "../../modules/07_lambda"
+  
+  app_name    = "my-app"
+  environment = "prod"
+  
+  # Use outputs from SQS module
+  sqs_queue_arn = data.terraform_remote_state.sqs.outputs.queue_arn
+  sqs_queue_url = data.terraform_remote_state.sqs.outputs.queue_id
+  dlq_arn       = data.terraform_remote_state.sqs.outputs.dlq_arn
+}
+```
+
+## Variables
+
+| Name | Description | Type | Default |
+|------|-------------|------|---------|
+| `app_name` | Application name for tagging | `string` | `"the-awesome-app"` |
+| `environment` | Environment name | `string` | `"prod"` |
+| `lambda_name` | Lambda function name | `string` | `"sqs-processor"` |
+| `lambda_timeout` | Function timeout in seconds | `number` | `30` |
+| `lambda_memory_size` | Memory allocation in MB | `number` | `128` |
+| `sqs_queue_arn` | SQS queue ARN (optional) | `string` | `""` |
+| `sqs_queue_url` | SQS queue URL (optional) | `string` | `""` |
+| `sqs_queue_name` | SQS queue name for lookup (optional) | `string` | `""` |
+| `dlq_arn` | Dead letter queue ARN (optional) | `string` | `""` |
+| `batch_size` | SQS event source batch size | `number` | `10` |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| `lambda_function_name` | Lambda function name |
+| `lambda_function_arn` | Lambda function ARN |
+| `configured_sqs_queue_arn` | Configured SQS queue ARN |
+| `event_source_mapping_enabled` | Whether event source mapping was created |
+| `cli_invoke_example` | CLI command to test Lambda |
+| `cli_logs_example` | CLI command to view logs |
+| `cli_sqs_send_example` | CLI command to send test message |
+
+## Architecture
+
+The module creates:
+- Lambda function with Python 3.9 runtime
+- IAM role with SQS read permissions
+- Event source mapping (if queue ARN provided)
+- Environment variables for queue configuration
+
+## Dependencies
+
+- **Optional**: SQS queue (can be in same or different Terraform state)
+- **Required**: IAM permissions for Lambda and SQS operations
 
 ## Resources Created
 
