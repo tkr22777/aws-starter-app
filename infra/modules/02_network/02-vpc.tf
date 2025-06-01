@@ -55,34 +55,3 @@ resource "aws_route_table" "app_vpc_rt" {
     Name = "${var.app_name}-route-table"
   }
 }
-
-# Outputs for the VPC and related resources
-output "vpc_id" {
-  description = "The ID of the VPC"
-  value       = aws_vpc.app_vpc.id
-}
-
-output "vpc_cidr" {
-  description = "The CIDR block of the VPC"
-  value       = aws_vpc.app_vpc.cidr_block
-}
-
-output "vpc_ipv6_cidr_block" {
-  description = "The IPv6 CIDR block of the VPC"
-  value       = aws_vpc.app_vpc.ipv6_cidr_block
-}
-
-output "vpc_default_security_group_id" {
-  description = "The ID of the default security group created with the VPC"
-  value       = aws_vpc.app_vpc.default_security_group_id
-}
-
-output "internet_gateway_id" {
-  description = "The ID of the Internet Gateway"
-  value       = aws_internet_gateway.app_vpc_gw.id
-}
-
-output "route_table_id" {
-  description = "The ID of the route table"
-  value       = aws_route_table.app_vpc_rt.id
-}

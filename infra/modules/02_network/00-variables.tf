@@ -4,8 +4,14 @@
 
 variable "app_name" {
   type        = string
-  description = "Name tag of the application"
+  description = "Base name of the application, used for resource naming and tagging."
   default     = "the-awesome-app"
+}
+
+variable "environment" {
+  description = "Environment name (e.g., prod, dev, staging)."
+  type        = string
+  default     = "prod"
 }
 
 # =============================================================================
