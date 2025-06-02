@@ -1,58 +1,91 @@
-* Engineering mindset:
+# UNIVERSAL ENGINEERING PRINCIPLES
+
+## Engineering Mindset
 - You are a principal software engineer.
 - You are responsible for:
   - the code quality of the software.
   - the code organization and readability of the software.
 
-* Workflow and verification:
-- common:
-- Create detailed step-by-step plans before implementing changes. For complex changes affecting multiple files, break down into smaller, focused plans. Complete and verify each sub-plan before proceeding to ensure stability and correctness.
-- Chain multiple commands so one execution verifies functionality changes; add delay between dependent commands if needed.
-- When reorganizing files, remove old files after verifying their replacements are in place
+## Universal Workflow and Verification
+- **Detailed Planning**: Create detailed step-by-step plans before implementing changes. For complex changes affecting multiple files, break down into smaller, focused plans. Complete and verify each sub-plan before proceeding to ensure stability and correctness.
+- **Command Chaining**: Chain multiple commands so one execution verifies functionality changes; add delay between dependent commands if needed.
+- **File Operations**: When reorganizing files, remove old files after verifying their replacements are in place.
 
-* Terminal command execution:
+## Terminal Command Best Practices
 - **Minimal echoes**: Avoid excessive echo statements. Terminal output is sufficient for understanding command results.
 - **Selective concatenation**: Only concatenate commands when performing many similar operations (e.g., deleting 10 resources). Don't concatenate unrelated commands.
 - **Preserve important output**: For critical commands, don't pipe to jq or other tools if error details might be lost. Let raw output show first.
 - **Separate long-running commands**: Don't concatenate commands that take time to execute. Run them separately so progress can be monitored.
 - **Trust terminal output**: Command output usually provides sufficient information without additional logging or echoing.
 
-* File and directory operations:
+## File and Directory Operations
 - **Prefer terminal commands**: For moving, renaming, or reorganizing files/directories, use terminal commands (`mv`, `cp`, `mkdir`, etc.) instead of reading entire files and recreating them
 - **Direct operations**: Use `mv source target` for renames/moves rather than complex file manipulation
 - **Efficiency first**: Terminal commands are faster and preserve file metadata, permissions, and timestamps
 
-* Codebase organization:
+## Universal Code Organization
 - Keep README.md concise with high-level technical information for engineers. Ensure it reflects the current state of the codebase without change history.
+- **Compact Formatting**: Use minimal spacing and avoid excessive blank lines or separator characters. Keep documentation dense but readable.
 
-# Infrastructure as Code Guidelines
+# PYTHON ECOSYSTEM STANDARDS
 
-## Project Structure
+## Python Project Structure
+- **Virtual Environments**: Always use virtual environments for dependency isolation
+- **Dependency Management**: Use requirements.txt or poetry.lock for reproducible builds
+- **Code Quality**: Follow PEP 8 standards and use automated formatting tools
 
+## Python Testing Strategy
+- **Unit Testing**: Use pytest for comprehensive test coverage
+- **Integration Testing**: Test database connections and external API integrations
+- **Mocking**: Use appropriate mocking for external dependencies
+
+# FASTAPI-SPECIFIC STANDARDS
+
+## FastAPI Project Organization
+- **Router Structure**: Organize endpoints using APIRouter for modular design
+- **Dependency Injection**: Use FastAPI's dependency injection for database connections and authentication
+- **API Documentation**: Leverage automatic OpenAPI documentation generation
+
+## FastAPI Testing
+- **TestClient**: Use FastAPI's TestClient for API endpoint testing
+- **Database Testing**: Use test databases for integration testing
+- **Authentication Testing**: Test protected endpoints with proper authentication
+
+# REACT ECOSYSTEM STANDARDS
+
+## React Project Structure
+- **Component Organization**: Group components by feature, not by type
+- **State Management**: Use appropriate state management (useState, useContext, Redux)
+- **Performance**: Implement React.memo, useMemo, useCallback for optimization
+
+## React Testing Strategy
+- **Component Testing**: Use React Testing Library for component testing
+- **Integration Testing**: Test user interactions and data flow
+- **Mock External APIs**: Mock API calls for reliable testing
+
+# TERRAFORM INFRASTRUCTURE STANDARDS
+
+## Terraform Project Structure
 - **Modular Design**: Each directory represents a deployable unit
 - **Ordered Dependencies**: Deploy in numbered order (00, 01, 02...)
 - **Single Responsibility**: Each module handles one logical concern
 - **Commons Pattern**: Shared resources in `08_commons/`
 
-## Terraform Standards
-
-### File Organization
+## Terraform File Organization
 - `00-variables.tf`: Input variables with descriptions
 - `01-data.tf`: Data sources and external references  
 - `02-main.tf`: Provider and backend configuration
 - `03-*.tf`: Resource definitions (numbered by type)
 - `04-outputs.tf`: Output values and CLI examples
 
-### Variable Organization
+## Terraform Variable Organization
 - **Group Similar Variables**: Organize variables by logical sections with clear headers
 - **Section Headers**: Use commented section dividers for readability
 - **Logical Grouping**: Group by: Application config, VPC config, Subnet config, Database config, etc.
 - **Default Values Preferred**: Use default values in variables.tf files instead of separate .tfvars files for environment-specific configurations. This keeps configuration clean and eliminates the need for additional files.
 - **Example Structure**:
 ```hcl
-# =============================================================================
 # Application Configuration
-# =============================================================================
 variable "app_name" { 
   description = "Name of the application"
   type        = string
@@ -65,19 +98,15 @@ variable "environment" {
   default     = "prod"
 }
 
-# =============================================================================
 # VPC Configuration  
-# =============================================================================
 variable "vpc_cidr_block" { ... }
 
-# =============================================================================
 # Subnet Configuration
-# =============================================================================
 variable "subnet_cidr_block" { ... }
 variable "availability_zone" { ... }
 ```
 
-### Naming Conventions
+## Terraform Naming Conventions
 ```hcl
 # Resources: service-purpose-modifier
 resource "aws_s3_bucket" "app_assets_bucket" {}
@@ -89,7 +118,7 @@ variable "database_instance_class" {}
 output "db_connection_string" {}
 ```
 
-### Backend Configuration
+## Terraform Backend Configuration Standards
 - **No Backend in Modules**: Individual modules should NEVER include backend configuration blocks
 - **Centralized State Management**: Backend configuration is handled at the environment level only
 - **Environment-Level Backend**: Only `infra/environments/{env}/` directories should contain backend configuration
@@ -117,7 +146,7 @@ terraform {
 # ❌ NEVER include backend blocks in base modules
 ```
 
-### Terraform Version Standards
+## Terraform Version Standards
 - **Consistent Version**: Use Terraform `~> 1.5.0` across ALL modules and environments
 - **AWS Provider**: Use AWS provider `~> 5.0` for consistency and latest features
 - **Version Constraints**: Always specify version constraints to prevent unexpected updates
@@ -147,7 +176,7 @@ provider "aws" {
 }
 ```
 
-### Code Structure Best Practices
+## Terraform Code Structure Best Practices
 - **Clear File Purpose**: File names immediately indicate content and purpose
 - **Logical Flow**: Variables → Data → Provider → Resources → Outputs
 - **Descriptive Comments**: Section headers and resource explanations
@@ -169,7 +198,7 @@ module_name/
 └── README.md          # Module documentation
 ```
 
-### Data Source Patterns
+## Terraform Data Source Patterns
 - **Use Filter Instead of Tags**: ALL modules must use `filter` blocks for external resource discovery, never `tags` blocks
 - **Consistent Naming Pattern**: Use `tag:Name` filter with environment-based naming for predictable resource discovery
 - **Conditional Data Sources**: Use `count` parameter for optional resource lookups to handle missing resources gracefully
@@ -212,14 +241,7 @@ data "aws_vpc" "main" {
 - **Error Handling**: Always include proper validation when using conditional data sources
 - **Documentation**: Include both filter-based and direct-reference examples in module outputs
 
-## Deployment Process
-
-### Initial Setup (Root Credentials)
-1. Deploy state bucket: `00_ops_foundation/00_state_bucket`
-2. Deploy terraform user: `00_ops_foundation/01_terraform_user`
-3. Switch to terraform_user credentials for all subsequent deployments
-
-### Application Deployment (Terraform User)
+## Terraform Deployment Process
 ```bash
 # Template for each module
 cd infra/{module_name}
@@ -228,7 +250,7 @@ terraform plan
 terraform apply
 ```
 
-### Post-Deployment Verification (AWS CLI)
+## Terraform Post-Deployment Verification
 - **Always verify with AWS CLI**: After terraform deployments, use AWS CLI to confirm actual resource state
 - **Audit for orphaned resources**: Check for resources not managed by current Terraform state
 - **Validate cleanup operations**: Ensure deleted resources are actually removed from AWS
@@ -252,20 +274,7 @@ aws ec2 describe-route-tables --region us-east-1 --filters "Name=vpc-id,Values=V
 aws ec2 describe-vpcs --region us-east-1 --filters "Name=tag:Name,Values=*app-name*"
 ```
 
-### Dependency Order
-1. Foundation (state, IAM)
-2. Authentication (Cognito)
-3. Network (VPC, ECR)
-4. Database (RDS)
-5. Compute (EC2)
-6. Connectivity (EC2-RDS)
-7. Messaging (SQS)
-8. Serverless (Lambda)
-9. Commons (security, logging, storage)
-10. Service Users (external access)
-
-## Security & Compliance
-
+## Terraform Security & Compliance
 ### IAM Best Practices
 - **Least Privilege**: Minimum required permissions
 - **Policy Separation**: Logical grouping of permissions
@@ -284,8 +293,7 @@ aws ec2 describe-vpcs --region us-east-1 --filters "Name=tag:Name,Values=*app-na
 - **Metric Filters**: Automated alerting on errors
 - **Log Retention**: Cost-optimized retention periods
 
-## Resource Management
-
+## Terraform Resource Management
 ### Tagging Strategy
 ```hcl
 tags = {
@@ -303,15 +311,7 @@ tags = {
 - **Instance Sizing**: Right-sized for workload
 - **Reserved Capacity**: For production workloads
 
-## Code Quality
-
-### Module Design
-- **Configurable Defaults**: Sensible defaults with override options
-- **Comprehensive Outputs**: ARNs, endpoints, CLI examples
-- **Error Handling**: Validation and constraints
-- **Documentation**: Clear README with usage examples
-
-### Standards Validation
+## Terraform Standards Validation
 **Code Review Checklist**: Verify these patterns in all modules during reviews and testing:
 
 - **Data Source Pattern**: ✅ All external resource lookups use `filter` blocks (never `tags` blocks)
@@ -353,66 +353,36 @@ grep -r "version.*aws" infra/ --include="*.tf" | grep -v "~> 5.0"
 find infra/ -name "*.tf" -exec terraform fmt -check {} \;
 ```
 
-### Testing Strategy
+## Terraform Testing Strategy
 - Use `terraform plan`
 - **AWS CLI Verification**: Always validate actual AWS resource state after deployments
 - **Orphan Detection**: Use AWS CLI to identify resources not in Terraform state
 - **Cleanup Validation**: Verify deleted resources are actually removed from AWS account
 - **Naming Conflict Detection**: Check for duplicate resource names causing "multiple resources matched" errors
 
-## Code Quality
+# PROJECT-SPECIFIC CONFIGURATION
 
-### Module Design
+## AWS Starter App Infrastructure
+
+### Initial Setup Process (Root Credentials)
+1. Deploy state bucket: `00_ops_foundation/00_state_bucket`
+2. Deploy terraform user: `00_ops_foundation/01_terraform_user`
+3. Switch to terraform_user credentials for all subsequent deployments
+
+### Deployment Dependency Order
+1. Foundation (state, IAM)
+2. Authentication (Cognito)
+3. Network (VPC, ECR)
+4. Database (RDS)
+5. Compute (EC2)
+6. Connectivity (EC2-RDS)
+7. Messaging (SQS)
+8. Serverless (Lambda)
+9. Commons (security, logging, storage)
+10. Service Users (external access)
+
+### Project-Specific Module Design
 - **Configurable Defaults**: Sensible defaults with override options
 - **Comprehensive Outputs**: ARNs, endpoints, CLI examples
 - **Error Handling**: Validation and constraints
 - **Documentation**: Clear README with usage examples
-
-### Standards Validation
-**Code Review Checklist**: Verify these patterns in all modules during reviews and testing:
-
-- **Data Source Pattern**: ✅ All external resource lookups use `filter` blocks (never `tags` blocks)
-  ```bash
-  # Check for incorrect tags usage
-  grep -r "tags = {" infra/ --include="*.tf" | grep -v "resource"
-  ```
-- **Backend Configuration**: ✅ Modules have NO backend blocks (only environment-level configs)
-- **Terraform Version**: ✅ All modules use consistent Terraform `~> 1.5.0` and AWS provider `~> 5.0`
-- **Naming Convention**: ✅ Resources follow `${var.app_name}-${var.environment}-resource-type` pattern
-- **Conditional Lookups**: ✅ Data sources use `count` parameter for optional resource discovery
-- **Variable Organization**: ✅ Variables grouped by logical sections with clear headers
-- **File Structure**: ✅ Files follow numbered naming convention (00-variables.tf, 01-data.tf, etc.)
-- **Environment Integration**: ✅ Modules use remote state for dependency management
-- **Tagging Compliance**: ✅ All resources include required tags (Name, Environment, Project, Module, ManagedBy)
-- **Code Formatting**: ✅ All files formatted with `terraform fmt`
-
-**Automated Checks**: Run these commands to validate standards compliance:
-```bash
-# Check for deprecated tags usage in data sources
-grep -r "tags = {" infra/ --include="*.tf" | grep "data\."
-
-# Verify filter pattern usage
-grep -r "filter {" infra/ --include="*.tf" | grep -A 2 "tag:Name"
-
-# Check variable organization (should have section headers)
-grep -r "# =============" infra/ --include="*variables.tf"
-
-# Find backend blocks in base modules (should be empty)
-find infra/ -name "*.tf" -not -path "*/environments/*" -exec grep -l "backend" {} \;
-
-# Check Terraform version consistency
-grep -r "required_version" infra/ --include="*.tf" | grep -v "~> 1.5.0"
-
-# Verify AWS provider version consistency  
-grep -r "version.*aws" infra/ --include="*.tf" | grep -v "~> 5.0"
-
-# Check code formatting
-find infra/ -name "*.tf" -exec terraform fmt -check {} \;
-```
-
-### Testing Strategy
-- Use `terraform plan`
-- **AWS CLI Verification**: Always validate actual AWS resource state after deployments
-- **Orphan Detection**: Use AWS CLI to identify resources not in Terraform state
-- **Cleanup Validation**: Verify deleted resources are actually removed from AWS account
-- **Naming Conflict Detection**: Check for duplicate resource names causing "multiple resources matched" errors
