@@ -2,43 +2,23 @@
 
 Production-ready AWS infrastructure using Terraform with modular architecture and environment-specific configurations.
 
-<details>
-<summary>⚙️ Development Environment Setup</summary>
+## Quick Start
 
-### AWS Credentials Configuration
+**Prerequisites**: AWS CLI, Terraform 1.5+, and root AWS credentials
+**Setup**: Follow AWS environment setup guide in [`infra/Readme.md`](infra/Readme.md)
+
 ```bash
-# 1. Use root credentials for foundation only
-aws configure --profile root
-# Deploy: 00_ops_foundation/00_state_bucket → 01_terraform_user
+# 1. Setup AWS credentials and deploy foundation (see infra/Readme.md)
+cd infra && # follow AWS setup guide
 
-# 2. Switch to terraform_user for all operations
-cd infra/ops_foundation/01_terraform_user
-terraform output terraform_user_access_key_id
-terraform output terraform_user_secret_access_key
+# 2. Deploy core infrastructure
+cd environments/prod/02_network && terraform init && terraform apply
+cd ../02a_alb && terraform init && terraform apply
+cd ../04_ec2 && terraform init && terraform apply
 
-aws configure --profile terraform
-# Access Key ID: [from terraform output above]
-# Secret Access Key: [from terraform output above]
-# Region: us-east-1
-
-export AWS_PROFILE=terraform
+# 3. Test deployment
+curl $(cd 02a_alb && terraform output -raw application_url)/api/
 ```
-
-### Check Deployment State
-```bash
-# Quick status across all modules
-find infra/environments/prod -name "*.tfstate" -exec basename {} \; | sort
-
-# Detailed state for specific module
-cd infra/environments/prod/{module_name}
-terraform state list
-terraform show -json | jq '.values.root_module.resources[].type' | sort | uniq -c
-
-# Check AWS resources directly
-aws sts get-caller-identity  # Verify credentials
-```
-
-</details>
 
 <details>
 <summary>🏗️ Architecture Overview</summary>
@@ -48,6 +28,12 @@ aws sts get-caller-identity  # Verify credentials
 **Environment Isolation**: Separate configurations in `infra/environments/prod/` with dedicated state management.
 
 **Configurable Modules**: Following standardized pattern with comprehensive variables, remote state integration, and production defaults.
+
+**Technology Stack**:
+- **Infrastructure**: Terraform with AWS provider
+- **Frontend**: React application with AWS Cognito authentication
+- **Backend**: FastAPI with PostgreSQL database
+- **Deployment**: EC2 and ECS with Application Load Balancer
 
 </details>
 
@@ -122,23 +108,35 @@ aws sts get-caller-identity  # Verify credentials
 - **Enhanced Security**: Combined KMS+Secrets Manager, EC2+ECS+ECR logical groupings
 - **Maintainability**: Clear separation of concerns for debugging and reviews
 
+### Documentation Enhancement
+- **Collapsible Sections**: Improved navigation with organized, expandable content
+- **Application-Focused**: Added practical configuration guides and integration examples
+- **Developer Experience**: Comprehensive setup verification and troubleshooting commands
+
 </details>
 
 <details>
-<summary>🔧 Deployment Process</summary>
+<summary>🔧 Application Components</summary>
 
-### Prerequisites
-Foundation modules deployed with root credentials, terraform_user configured as above.
+### Infrastructure (`infra/`)
+- **Modular Terraform**: Environment-specific configurations with shared modules
+- **AWS Foundation**: VPC, ALB, EC2, RDS, Cognito, SQS, Lambda
+- **Security**: IAM policies, security groups, encryption at rest
+- **Monitoring**: CloudTrail, CloudWatch logs, application metrics
 
-### Environment Deployment
-```bash
-cd infra/environments/prod/{module_name}
-terraform init
-terraform plan
-terraform apply
-```
+### Frontend (`client/`)
+- **React Application**: Modern SPA with TypeScript
+- **Authentication**: AWS Cognito integration with hosted UI
+- **Routing**: React Router with protected routes
+- **State Management**: Context API for user authentication
 
-### Dependency Order
+### Backend (`api/`)
+- **FastAPI Framework**: High-performance Python API
+- **Database Integration**: PostgreSQL with SQLAlchemy ORM
+- **Authentication**: JWT token validation from Cognito
+- **Docker Support**: Containerized deployment
+
+### Deployment Order
 1. ✅ Authentication (Cognito)
 2. ✅ Network (VPC, Subnets)  
 3. 🔄 Load Balancer (ALB)
@@ -157,4 +155,15 @@ terraform apply
 
 ## Development
 
-Follow guidelines in `.cursorrules` for infrastructure standards, security practices, and deployment procedures.
+### Directory Structure
+- **`infra/`**: Complete AWS infrastructure with Terraform modules
+- **`client/`**: React frontend application
+- **`api/`**: FastAPI backend application
+
+### Getting Started
+1. **Infrastructure**: Follow setup guide in [`infra/Readme.md`](infra/Readme.md)
+2. **Frontend**: See instructions in [`client/README.md`](client/README.md)
+3. **Backend**: See setup in [`api/Readme.md`](api/Readme.md)
+
+### Engineering Standards
+Follow guidelines in [`.cursorrules`](.cursorrules) for infrastructure standards, security practices, and deployment procedures.

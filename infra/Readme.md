@@ -3,6 +3,148 @@
 Terraform modules for a modular, scalable AWS application stack with optimized deployment workflows.
 
 <details>
+<summary>⚙️ AWS Environment Setup & Verification</summary>
+
+## Prerequisites Verification
+
+### Check AWS CLI Installation
+```bash
+# Verify AWS CLI is installed and accessible
+aws --version
+# Expected: aws-cli/2.x.x or higher
+
+# Check if jq is available for JSON parsing
+jq --version
+# Expected: jq-1.6 or higher (install with: brew install jq / apt-get install jq)
+```
+
+### Verify Root User Access
+```bash
+# Test root credentials are configured
+aws sts get-caller-identity --profile root
+# Expected: Should show your AWS account ID and root user ARN
+
+# Check root user permissions for foundation setup
+aws iam list-users --profile root --max-items 1
+# Expected: Should list users without permission errors
+
+# Verify S3 access for state bucket creation
+aws s3 ls --profile root
+# Expected: Should list buckets or show empty result (no permission errors)
+```
+
+### Verify Terraform Installation
+```bash
+# Check Terraform version
+terraform version
+# Expected: Terraform v1.5.x or compatible version
+
+# Test terraform plan capability
+cd infra/ops_foundation/00_state_bucket
+terraform init -backend=false
+terraform validate
+# Expected: Configuration is valid
+```
+
+## AWS Credentials Configuration
+
+### 1. Foundation Setup (Root Credentials)
+```bash
+# Configure root user profile for foundation-only deployment
+aws configure --profile root
+# AWS Access Key ID: [your-root-access-key]
+# AWS Secret Access Key: [your-root-secret-key] 
+# Default region name: us-east-1
+# Default output format: json
+
+# Verify root profile
+aws sts get-caller-identity --profile root
+```
+
+### 2. Deploy Foundation Infrastructure
+```bash
+# Deploy state bucket (1-2 min)
+cd infra/ops_foundation/00_state_bucket
+terraform init
+terraform plan
+terraform apply
+
+# Deploy terraform user (1 min)
+cd ../01_terraform_user  
+terraform init
+terraform plan
+terraform apply
+```
+
+### 3. Switch to Terraform User Credentials
+```bash
+# Get terraform_user credentials
+cd infra/ops_foundation/01_terraform_user
+terraform output terraform_user_access_key_id
+terraform output terraform_user_secret_access_key
+
+# Configure terraform profile
+aws configure --profile terraform
+# Access Key ID: [from terraform output above]
+# Secret Access Key: [from terraform output above]
+# Region: us-east-1
+# Output format: json
+
+# Set as default profile for infrastructure operations
+export AWS_PROFILE=terraform
+
+# Verify terraform user access
+aws sts get-caller-identity
+# Expected: Should show terraform_user ARN, NOT root
+```
+
+### 4. Verify Terraform User Permissions
+```bash
+# Test core infrastructure permissions
+aws ec2 describe-vpcs --region us-east-1 --max-items 1
+aws s3 ls
+aws iam list-attached-user-policies --user-name terraform_user
+
+# All commands should succeed without permission errors
+```
+
+## Deployment State Verification
+
+### Quick Infrastructure Status
+```bash
+# Check what's deployed across all modules
+find infra/environments/prod -name "*.tfstate" -exec basename {} \; | sort
+
+# Count deployed resources
+find infra/environments/prod -name "terraform.tfstate" -exec terraform show -json {} \; | jq '.values.root_module.resources | length' | paste -sd+ - | bc
+```
+
+### Detailed Module State
+```bash
+# Check specific module deployment
+cd infra/environments/prod/{module_name}
+terraform state list
+terraform show -json | jq '.values.root_module.resources[].type' | sort | uniq -c
+
+# Verify AWS resources match terraform state
+aws sts get-caller-identity  # Confirm correct credentials
+```
+
+### AWS Resource Verification
+```bash
+# Core infrastructure audit
+aws ec2 describe-vpcs --region us-east-1 --output table
+aws ec2 describe-instances --region us-east-1 --output table  
+aws rds describe-db-instances --region us-east-1 --output table
+aws elbv2 describe-load-balancers --region us-east-1 --output table
+
+# Check resource naming patterns
+aws ec2 describe-vpcs --region us-east-1 --filters "Name=tag:Name,Values=*awesome-app*" --output table
+```
+
+</details>
+
+<details>
 <summary>🏗️ Architecture Philosophy</summary>
 
 **Modular Design**: Each directory = deployable unit with specific purpose
@@ -62,9 +204,12 @@ EC2 and ECS modules register with shared ALB. Deploy ALB before services.
 
 ### **Minimal Setup (Development)**
 ```bash
-# Foundation
+# Foundation (use root profile)
 cd 00_ops_foundation/00_state_bucket && terraform init && terraform apply
 cd ../01_terraform_user && terraform init && terraform apply
+
+# Switch to terraform profile
+export AWS_PROFILE=terraform
 
 # Core Infrastructure
 cd ../../02_network && terraform init && terraform apply      # 30s - Fast
