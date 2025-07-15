@@ -37,4 +37,22 @@ output "user_pool_domain" {
 output "user_pool_region" {
   description = "The AWS region where the Cognito User Pool is deployed"
   value       = data.aws_region.current.name
+}
+
+# Additional outputs for easier application integration
+output "hosted_ui_url" {
+  description = "The complete URL for Cognito's hosted authentication UI"
+  value       = "https://${aws_cognito_user_pool_domain.main.domain}.auth.${data.aws_region.current.name}.amazoncognito.com"
+}
+
+output "app_configuration" {
+  description = "Complete configuration object for frontend integration"
+  value = {
+    region              = data.aws_region.current.name
+    userPoolId         = aws_cognito_user_pool.app_user_pool.id
+    userPoolWebClientId = aws_cognito_user_pool_client.frontend.id
+    domain             = "${aws_cognito_user_pool_domain.main.domain}.auth.${data.aws_region.current.name}.amazoncognito.com"
+    redirectSignIn     = var.app_callback_urls[0]
+    redirectSignOut    = var.app_logout_urls[0]
+  }
 } 

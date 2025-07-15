@@ -1,24 +1,24 @@
 data "aws_region" "current" {}
 
 resource "aws_cognito_user_pool" "app_user_pool" {
-  name = "${var.app_name}-user-pool"
+  name = "${var.app_name}-${var.environment}-user-pool"
   deletion_protection = "INACTIVE"
 
   username_attributes = ["email"]
 
   username_configuration {
-    case_sensitive = false
+    case_sensitive = var.case_sensitive_usernames
   }
 
-  auto_verified_attributes = ["email"]
+  auto_verified_attributes = var.auto_verify_email ? ["email"] : []
 
-  mfa_configuration = "OFF"
+  mfa_configuration = var.enable_mfa
 
   password_policy {
-    minimum_length    = 8
+    minimum_length    = var.password_minimum_length
     require_lowercase = true
     require_numbers   = true
-    require_symbols   = false
+    require_symbols   = var.require_password_symbols
     require_uppercase = true
   }
 
@@ -36,16 +36,19 @@ resource "aws_cognito_user_pool" "app_user_pool" {
   }
 
   /** Custom Attributes */
-  schema {
-    attribute_data_type      = "String"
-    name                     = "role"
-    required                 = false
-    mutable                  = true
-    developer_only_attribute = false
+  dynamic "schema" {
+    for_each = var.enable_custom_role_attribute ? [1] : []
+    content {
+      attribute_data_type      = "String"
+      name                     = "role"
+      required                 = false
+      mutable                  = true
+      developer_only_attribute = false
 
-    string_attribute_constraints {
-      min_length = 1
-      max_length = 2048
+      string_attribute_constraints {
+        min_length = 1
+        max_length = 2048
+      }
     }
   }
 
@@ -57,7 +60,7 @@ resource "aws_cognito_user_pool" "app_user_pool" {
 }
 
 resource "aws_cognito_user_pool_client" "frontend" {
-  name = "${var.app_name}-cognito-frontend"
+  name = "${var.app_name}-${var.environment}-cognito-frontend"
 
   user_pool_id = aws_cognito_user_pool.app_user_pool.id
 
@@ -94,6 +97,6 @@ resource "aws_cognito_user_pool_client" "backend" {
 
 # Domain for user pool - added to fix missing resource reference
 resource "aws_cognito_user_pool_domain" "main" {
-  domain       = "${var.app_name}-auth"
+  domain       = "${var.app_name}-${var.environment}-auth"
   user_pool_id = aws_cognito_user_pool.app_user_pool.id
 }
