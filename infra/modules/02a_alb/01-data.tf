@@ -4,16 +4,16 @@
 
 # Lookup VPC using filter with environment-based naming
 data "aws_vpc" "app_vpc" {
-  count = var.vpc_id == "" ? 1 : 0
+  count = var.vpc_id == "" ? 1 : 0 # Conditional lookup: only if vpc_id not provided
   filter {
-    name   = "tag:Name"
+    name   = "tag:Name" # Search by Name tag rather than deprecated tags block
     values = ["${var.app_name}-${var.environment}-vpc"]
   }
 }
 
 # Lookup main application subnet
 data "aws_subnet" "main_subnet" {
-  count = length(var.subnet_ids) == 0 ? 1 : 0
+  count = length(var.subnet_ids) == 0 ? 1 : 0 # Only lookup if subnet_ids list is empty
   filter {
     name   = "tag:Name"
     values = ["${var.app_name}-${var.environment}-subnet-app"]
@@ -34,8 +34,8 @@ data "aws_subnet" "subnet_ha_2" {
 # =============================================================================
 
 locals {
-  vpc_id = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.app_vpc[0].id
-  subnet_ids = length(var.subnet_ids) > 0 ? var.subnet_ids : [
+  vpc_id = var.vpc_id != "" ? var.vpc_id : data.aws_vpc.app_vpc[0].id # Use provided ID or discovered VPC
+  subnet_ids = length(var.subnet_ids) > 0 ? var.subnet_ids : [ # Use provided IDs or discovered subnets
     data.aws_subnet.main_subnet[0].id,
     data.aws_subnet.subnet_ha_2[0].id
   ]
