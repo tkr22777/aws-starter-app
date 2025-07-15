@@ -11,7 +11,7 @@ terraform {
   backend "s3" {
     bucket         = "terraform-state-store-24680"
     key            = "environments/prod/04b_ec2_rds/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "us-east-1"      # Cannot use variables - processed during terraform init
     dynamodb_table = "terraform-state-locks"
   }
 }
