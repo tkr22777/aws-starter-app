@@ -2,13 +2,17 @@
 
 Terraform modules for a modular, scalable AWS application stack with optimized deployment workflows.
 
-## 🏗️ **Architecture Philosophy**
+<details>
+<summary>🏗️ Architecture Philosophy</summary>
 
 **Modular Design**: Each directory = deployable unit with specific purpose
 **Dependency Chain**: Deploy in numerical order, fast modules separate from slow ones
 **Shared Resources**: ALB and network infrastructure shared across services
 
-## 📁 **Directory Structure & Selection Guide**
+</details>
+
+<details>
+<summary>📁 Directory Structure & Selection Guide</summary>
 
 | Module | Deploy Time | Purpose | When to Use |
 |--------|-------------|---------|-------------|
@@ -22,7 +26,10 @@ Terraform modules for a modular, scalable AWS application stack with optimized d
 | `08_commons/` | 1-3 min | Logging, security, storage | Production requirements |
 | `09_svc_user/` | 30 sec | External access credentials | CI/CD or external integrations |
 
-## ⚠️ **CRITICAL: Module Dependencies**
+</details>
+
+<details>
+<summary>⚠️ CRITICAL: Module Dependencies</summary>
 
 ### **Network ↔ ALB Dependency**
 **Problem**: Network subnet changes break ALB module
@@ -48,7 +55,10 @@ EC2 and ECS modules register with shared ALB. Deploy ALB before services.
 04_ec2 before 02a_alb (cannot find ALB)
 ```
 
-## 🚀 **Quick Start Workflows**
+</details>
+
+<details>
+<summary>🚀 Quick Start Workflows</summary>
 
 ### **Minimal Setup (Development)**
 ```bash
@@ -80,7 +90,10 @@ cd 10_ecs && terraform init && terraform apply               # 2min - Medium
 curl $(cd 02a_alb && terraform output -raw application_url)/
 ```
 
-## 🎯 **Smart Module Selection**
+</details>
+
+<details>
+<summary>🎯 Smart Module Selection</summary>
 
 **Choose based on your needs:**
 
@@ -91,7 +104,10 @@ curl $(cd 02a_alb && terraform output -raw application_url)/
 | **Container App** | `00`, `02`, `02a`, `10_ecs` | `03_rds`, `08_commons` |
 | **Full Production** | All modules | - |
 
-## 🧪 **Testing Commands**
+</details>
+
+<details>
+<summary>🧪 Testing Commands</summary>
 
 ### **Network Connectivity**
 ```bash
@@ -126,7 +142,10 @@ hey -n 1000 -c 10 $(cd 02a_alb && terraform output -raw application_url)/api/
 aws ecs describe-services --cluster the-awesome-app-cluster --services the-awesome-app-service --query 'services[0].desiredCount'
 ```
 
-## 🏭 **Production Considerations**
+</details>
+
+<details>
+<summary>🏭 Production Considerations</summary>
 
 ### **Performance Optimization**
 - **Fast deployment**: Keep network and ALB stable, iterate on services
@@ -143,7 +162,10 @@ aws ecs describe-services --cluster the-awesome-app-cluster --services the-aweso
 - **Networks**: Single subnet for simplicity, HA subnet auto-calculated
 - **Encryption**: KMS keys in `08_commons` for production data
 
-## 🛠️ **Troubleshooting**
+</details>
+
+<details>
+<summary>🛠️ Troubleshooting</summary>
 
 ### **Common Issues**
 ```bash
@@ -171,7 +193,9 @@ aws ecs update-service --cluster the-awesome-app-cluster --service the-awesome-a
 terraform force-unlock <lock-id>  # Only with explicit approval
 ```
 
-## 📋 **Quick Reference**
+</details>
+
+## 📋 Quick Reference
 
 **Always deploy foundation first**: `00_ops_foundation/`
 **Fast iteration**: Network (30s) → ALB (3min) → Services (1-2min)
