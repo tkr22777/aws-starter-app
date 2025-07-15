@@ -26,6 +26,7 @@
 ## Universal Code Organization
 - Keep README.md concise with high-level technical information for engineers. Ensure it reflects the current state of the codebase without change history.
 - **Compact Formatting**: Use minimal spacing and avoid excessive blank lines or separator characters. Keep documentation dense but readable.
+- **Collapsible Sections**: For README files with substantial content (>80 lines or >5 major sections), organize content using HTML `<details>/<summary>` collapsible sections with descriptive icons. Keep essential information (setup, quick start) immediately visible while making detailed sections expandable for better navigation and reduced cognitive load.
 
 # PYTHON ECOSYSTEM STANDARDS
 
