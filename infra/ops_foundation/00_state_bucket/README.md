@@ -66,6 +66,49 @@ terraform {
 }
 ```
 
+## Troubleshooting State Mismatch Issues
+
+### Problem: "state data in S3 does not have the expected content"
+**Symptoms:** AWS resources exist but `terraform plan` fails with digest mismatch error.
+
+**Root Cause:** S3 bucket and DynamoDB table exist but state file is missing/corrupted.
+
+**Fix Process:**
+```bash
+# 1. Comment out backend block in 00-main.tf
+# 2. Reset local state
+rm -rf .terraform
+terraform init
+
+# 3. Import existing resources
+terraform import aws_s3_bucket.terraform_state terraform-state-store-24680
+terraform import aws_dynamodb_table.terraform_locks terraform-state-locks
+terraform import aws_s3_bucket_public_access_block.terraform_state_public_access terraform-state-store-24680
+terraform import aws_s3_bucket_versioning.terraform_state terraform-state-store-24680
+terraform import aws_s3_bucket_server_side_encryption_configuration.terraform_state terraform-state-store-24680
+
+# 4. Verify local state
+terraform plan
+
+# 5. Copy state to S3
+aws s3 cp terraform.tfstate s3://terraform-state-store-24680/00_ops_foundation/00_state_bucket/terraform.tfstate --region us-east-1
+
+# 6. Uncomment backend block in 00-main.tf
+# 7. Get expected digest from error message
+terraform init -reconfigure
+
+# 8. Update DynamoDB with correct digest (use value from error)
+aws dynamodb put-item --table-name terraform-state-locks --item '{"LockID":{"S":"terraform-state-store-24680/00_ops_foundation/00_state_bucket/terraform.tfstate-md5"},"Digest":{"S":"DIGEST_VALUE_FROM_ERROR"}}' --region us-east-1
+
+# 9. Reconfigure backend
+terraform init -reconfigure
+
+# 10. Clean up local files
+rm terraform.tfstate terraform.tfstate.backup
+```
+
+**Verification:** `terraform plan` should return "No changes. Your infrastructure matches the configuration."
+
 ## Important Notes
 - This is a one-time setup
 - Root credentials should only be used for this initial setup
