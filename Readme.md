@@ -2,7 +2,46 @@
 
 Production-ready AWS infrastructure using Terraform with modular architecture and environment-specific configurations.
 
-## Architecture Overview
+<details>
+<summary>⚙️ Development Environment Setup</summary>
+
+### AWS Credentials Configuration
+```bash
+# 1. Use root credentials for foundation only
+aws configure --profile root
+# Deploy: 00_ops_foundation/00_state_bucket → 01_terraform_user
+
+# 2. Switch to terraform_user for all operations
+cd infra/ops_foundation/01_terraform_user
+terraform output terraform_user_access_key_id
+terraform output terraform_user_secret_access_key
+
+aws configure --profile terraform
+# Access Key ID: [from terraform output above]
+# Secret Access Key: [from terraform output above]
+# Region: us-east-1
+
+export AWS_PROFILE=terraform
+```
+
+### Check Deployment State
+```bash
+# Quick status across all modules
+find infra/environments/prod -name "*.tfstate" -exec basename {} \; | sort
+
+# Detailed state for specific module
+cd infra/environments/prod/{module_name}
+terraform state list
+terraform show -json | jq '.values.root_module.resources[].type' | sort | uniq -c
+
+# Check AWS resources directly
+aws sts get-caller-identity  # Verify credentials
+```
+
+</details>
+
+<details>
+<summary>🏗️ Architecture Overview</summary>
 
 **Modular Design**: Each numbered directory represents a deployable unit with proper dependency ordering.
 
@@ -10,7 +49,10 @@ Production-ready AWS infrastructure using Terraform with modular architecture an
 
 **Configurable Modules**: Following standardized pattern with comprehensive variables, remote state integration, and production defaults.
 
-## Module Status
+</details>
+
+<details>
+<summary>📋 Module Status</summary>
 
 ### ✅ **Production Ready & Deployed**
 - **01_cognito**: User authentication with Cognito User Pool
@@ -31,7 +73,10 @@ Production-ready AWS infrastructure using Terraform with modular architecture an
 - **08_commons**: Shared security, logging, and storage
 - **09_svc_user**: External service access with IAM
 
-## Infrastructure Status
+</details>
+
+<details>
+<summary>🚀 Infrastructure Status</summary>
 
 ### ✅ **Completed**
 - [x] SQS module with environment deployment and testing
@@ -60,7 +105,10 @@ Production-ready AWS infrastructure using Terraform with modular architecture an
 - [ ] Backup and disaster recovery procedures
 - [ ] Performance optimization and cost analysis
 
-## Recent Accomplishments
+</details>
+
+<details>
+<summary>🏆 Recent Accomplishments</summary>
 
 ### SQS-Lambda Integration
 - **Flexible Architecture**: Lambda supports direct ARN, name lookup, or remote state integration
@@ -74,12 +122,13 @@ Production-ready AWS infrastructure using Terraform with modular architecture an
 - **Enhanced Security**: Combined KMS+Secrets Manager, EC2+ECS+ECR logical groupings
 - **Maintainability**: Clear separation of concerns for debugging and reviews
 
-## Deployment Process
+</details>
+
+<details>
+<summary>🔧 Deployment Process</summary>
 
 ### Prerequisites
-1. Deploy `00_ops_foundation/00_state_bucket` (root credentials)
-2. Deploy `00_ops_foundation/01_terraform_user` (root credentials)
-3. Switch to terraform-user credentials for all subsequent operations
+Foundation modules deployed with root credentials, terraform_user configured as above.
 
 ### Environment Deployment
 ```bash
@@ -103,6 +152,8 @@ terraform apply
 11. ✅ Container Service (ECS) - *Standalone module ready*
 12. ✅ Container ALB (ECS-ALB) - *ALB integration module ready*
 13. 🔄 Service Users (External Access)
+
+</details>
 
 ## Development
 
