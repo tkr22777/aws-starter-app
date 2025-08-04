@@ -28,7 +28,7 @@ variable "aws_region" {
 variable "enable_deletion_protection" {
   description = "Enable deletion protection for the ALB"
   type        = bool
-  default     = true # Enable for production
+  default     = false # Enable for production
 }
 
 variable "internal" {
